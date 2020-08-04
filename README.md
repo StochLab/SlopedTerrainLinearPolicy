@@ -16,7 +16,7 @@ This save the initial policy as *filename.npy* in the initial_policies folder.Th
 ### To train the linear policy with ARS
 This is where the ARS trainining starts, with the initial polciy trainied in the previous step.
         
-        python ars_multi.py 
+        python train_policy.py 
 
 The above command starts the training in the default and the best by far hyperparameter and experiment settings.However, the following parameters can be customized in the training as desired b the user.
 
@@ -34,14 +34,14 @@ The above command starts the training in the default and the best by far hyperpa
 
 For example,
 
-      python ars_multi.py --lr 0.05 --noise 0.04 --logdir testDir --policy init_policy_TS.npy --msg "Training with some paramters" --episode_length 400
+      python train_policy.py --lr 0.05 --noise 0.04 --logdir testDir --policy init_policy_TS.npy --msg "Training with some paramters" --episode_length 400
 
 **Note:** 
 
 1. The initial policies are by default loaded from the *initial_policies* folder and the log directory is saved inside the *experiments* folder.
 2. The are a few other insignificant parameters which need not be changed for the training, for more info about the parameters run
 
-        python ars_multi.py --help
+        python train_policy.py --help
 
 ## To conduct tests on a policy
 To run a policy in default conditions, the following command is to be used.
@@ -60,6 +60,7 @@ the following test parameters can be changed while testing the policy,
 |--FrontMass|mass to be loaded to the front half of the body| float |0.0 to 0.15|Kilograms(Kg)|
 |--BackMass|mass to be loaded to the  rear half of the body| float |0.0 to 0.15|Kilograms(Kg)|
 |--RandomTest|flag to activate random sampling| bool |True or False|unitless|
+|--seed|seed for random sampling| int |unitless|
 
 Thus, for a 
 
@@ -69,7 +70,7 @@ Thus, for a
 
 2. random test
 
-        python test_policy.py --RandomTest True
+        python test_policy.py --RandomTest True --seed 100
 
 ## To do:
 
