@@ -52,6 +52,7 @@ the following test parameters can be changed while testing the policy,
 
 | Parameter     |About        |  type | Allowed values|unit|
 |:-------------:|:-------------:|:-----:|:---------:|:-----:|
+|--PolicyDir | directory of the policy to be tested | str |(check the experiments folder)| - |
 |--WedgeIncline | the elevation angle of wedge | int |0,5,7,9,11,13|Degrees(°)|
 |--WedgeOrientation| the yaw angle of wedge about world z axis | float | -90.0 to 90.0 |Degrees(°)|
 |--EpisodeLength |number of gait steps of a episode| int |0 to inf|number of steps|
@@ -60,17 +61,24 @@ the following test parameters can be changed while testing the policy,
 |--FrontMass|mass to be loaded to the front half of the body| float |0.0 to 0.15|Kilograms(Kg)|
 |--BackMass|mass to be loaded to the  rear half of the body| float |0.0 to 0.15|Kilograms(Kg)|
 |--RandomTest|flag to activate random sampling| bool |True or False|unitless|
-|--seed|seed for random sampling| int |unitless|
+|--seed|seed for random sampling| int | - |unitless|
+|--AddImuNoise| flag to add noise in IMU readings | bool |True or False|unitless|
 
 Thus, for a 
 
 1. custom test
 
-        python test_policy.py --WedgeIncline 11 --WedgeOrientation 15 --FrontMass 0.1 --FrictionCoeff 0.6
+        python test_policy.py --PolicyDir 23July3 --WedgeIncline 11 --WedgeOrientation 15 --FrontMass 0.1 --FrictionCoeff 0.6
 
 2. random test
 
-        python test_policy.py --RandomTest True --seed 100
+        python test_policy.py --PolicyDir 23July3 --RandomTest True --seed 100
+
+**Note:** 
+
+1. The test policies are by default loaded from the path *experiments/**given_logdir_name**/iterations/best_policy.npy"*, if not specified it loads the best ever policy pre trained by us.
+2. For loading the policies from other directories, you might have to change the path from within the *test_policy.py* file.
+
 
 ## To do:
 

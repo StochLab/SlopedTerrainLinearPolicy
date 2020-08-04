@@ -46,6 +46,7 @@ class Stoch2Env(gym.Env):
 				 seed_value = 100,
 				 wedge = True,
 				 anti_clock_ori = True,
+				 IMU_Noise = False,
 				 deg = 5):
 
 		self._is_stairs = stairs
@@ -127,6 +128,7 @@ class Stoch2Env(gym.Env):
 		self.prev_incline_vec = (0,0,1)
 
 		self.terrain_pitch = []
+		self.add_IMU_noise = IMU_Noise
 
 		self.INIT_POSITION =[0,0,0.3] #[0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
 		self.INIT_ORIENTATION = [0, 0, 0, 1]
@@ -586,8 +588,9 @@ class Stoch2Env(gym.Env):
 		RPY = np.round(RPY, 5)
 
 		for val in RPY:
-			noise_obs = self.add_noise(val)
-			self.obs_queue.append(noise_obs)
+			if(self.add_IMU_noise):
+				val = self.add_noise(val)
+			self.obs_queue.append(val)
 
 		obs = np.concatenate((self.obs_queue, [self.support_plane_estimated_roll,self.support_plane_estimated_pitch])).ravel()
 
