@@ -1,0 +1,7 @@
+learning_rate: 0.04
+noise: 0.04
+env_name: Stoch2-v0episode_length: 400.0
+direction ratio: 2.0
+Normal initialization: 1
+Gait: trot
+from random policy

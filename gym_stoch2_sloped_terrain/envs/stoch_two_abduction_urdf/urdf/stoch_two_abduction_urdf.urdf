@@ -1,0 +1,1321 @@
+<robot
+  name="stoch_two_abduction_urdf">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.00018289 -0.00058314 -0.0014954"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.703E-05"
+        ixy="4.4289E-07"
+        ixz="3.1832E-08"
+        iyy="8.9209E-05"
+        iyz="-1.5964E-06"
+        izz="0.00010459" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="front_body_link">
+    <inertial>
+      <origin
+        xyz="0.088699 3.0745E-07 0.019722"
+        rpy="0 0 0" />
+      <mass
+        value="1" />
+      <inertia
+        ixx="0.0022826"
+        ixy="-5.8326E-09"
+        ixz="-1.2357E-05"
+        iyy="0.0005698"
+        iyz="4.2795E-07"
+        izz="0.0026158" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_body_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_body_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_front_body_spine_joint"
+    type="fixed">
+    <origin
+      xyz="0.050947 0 0"
+      rpy="-2.2019E-15 1.7035E-16 3.4422E-15" />
+    <parent
+      link="base_link" />
+    <child
+      link="front_body_link" />
+    <!-- <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-0.26"
+      upper="0.26"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" /> -->
+  </joint>
+  <link
+    name="front_left_abd_link">
+    <inertial>
+      <origin
+        xyz="4.118E-05 -0.032715 -0.048093"
+        rpy="0 0 0" />
+      <mass
+        value="0.277" />
+      <inertia
+        ixx="1.1789E-05"
+        ixy="2.5858E-08"
+        ixz="1.1409E-07"
+        iyy="4.0497E-05"
+        iyz="-5.2784E-06"
+        izz="4.3082E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_left_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_left_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_front_left_abd_joint"
+    type="revolute">
+    <origin
+      xyz="0.0831 0.11512 0.0073929"
+      rpy="-4.4959E-07 -5.8797E-16 3.47E-15" />
+    <parent
+      link="front_body_link" />
+    <child
+      link="front_left_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-0.06"
+      upper="-3.92"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="fl_upper_hip_link">
+    <inertial>
+      <origin
+        xyz="1.793E-07 2.498E-16 -0.054218"
+        rpy="0 0 0" />
+      <mass
+        value="0.05" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_fl_upper_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.0175 -0.0015 -0.0385"
+      rpy="-5.3246E-15 0.78557 -4.3361E-15" />
+    <parent
+      link="front_left_abd_link" />
+    <child
+      link="fl_upper_hip_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-0.78"
+      upper="0.78"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="fl_lower_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.034185 0.00011378 -0.11157"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="9.59277e-06"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="9.59277e-06"
+        iyz="3.5983E-09"
+        izz="9.59277e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_lower_hip_joint"
+    type="continuous">
+    <origin
+      xyz="0 0.0045 -0.12"
+      rpy="3.7352E-14 -1.4398 -3.7103E-14" />
+    <parent
+      link="fl_upper_hip_link" />
+    <child
+      link="fl_lower_hip_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="fl_upper_knee_link">
+    <inertial>
+      <origin
+        xyz="-2.7756E-17 1.3878E-17 -0.014638"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_fl_upper_knee_joint"
+    type="revolute">
+    <origin
+      xyz="0.0175 -0.0015 -0.0385"
+      rpy="-2.4427E-16 -0.34913 -3.4692E-15" />
+    <parent
+      link="front_left_abd_link" />
+    <child
+      link="fl_upper_knee_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.22"
+      upper="1.22"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="fl_lower_knee_link">
+    <inertial>
+      <origin
+        xyz="2.7756E-17 1.3878E-17 -0.0775"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_lower_knee_joint"
+    type="continuous">
+    <origin
+      xyz="0 0.00800000000000321 -0.04"
+      rpy="-6.00351684713904E-16 1.32467433907094 -5.43469254040339E-16" />
+    <parent
+      link="fl_upper_knee_link" />
+    <child
+      link="fl_lower_knee_link" />
+    <axis
+      xyz="0 0.999999999999798 0" />
+  </joint>
+  <link
+    name="front_right_abd_link">
+    <inertial>
+      <origin
+        xyz="-4.118E-05 0.032715 -0.048093"
+        rpy="0 0 0" />
+      <mass
+        value="0.277" />
+      <inertia
+        ixx="1.1789E-05"
+        ixy="2.5858E-08"
+        ixz="-1.1409E-07"
+        iyy="4.0497E-05"
+        iyz="5.2784E-06"
+        izz="4.3082E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_right_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_right_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_front_right_abd_joint"
+    type="revolute">
+    <origin
+      xyz="0.0831 -0.11512 0.007393"
+      rpy="-6.5915E-08 5.6553E-16 3.5412E-15" />
+    <parent
+      link="front_body_link" />
+    <child
+      link="front_right_abd_link" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-0.06"
+      upper="-3.92"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="fr_upper_hip_link">
+    <inertial>
+      <origin
+        xyz="1.793E-07 2.7756E-16 -0.054218"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_fr_upper_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.0175 0.0015 -0.0385"
+      rpy="-4.9286E-15 0.78557 -3.9063E-15" />
+    <parent
+      link="front_right_abd_link" />
+    <child
+      link="fr_upper_hip_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-0.78"
+      upper="0.78"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="fr_lower_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.034185 0.00011378 -0.11157"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="9.59277e-06"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-06"
+        iyy="9.59277e-06"
+        iyz="3.5983E-08"
+        izz="9.59277e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_lower_hip_joint"
+    type="continuous">
+    <origin
+      xyz="0 -0.0045 -0.12"
+      rpy="0 -1.4398 0" />
+    <parent
+      link="fr_upper_hip_link" />
+    <child
+      link="fr_lower_hip_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="fr_upper_knee_link">
+    <inertial>
+      <origin
+        xyz="-2.7756E-17 -1.3878E-17 -0.014638"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_fr_upper_knee_joint"
+    type="revolute">
+    <origin
+      xyz="0.0175 0.0015 -0.0385"
+      rpy="2.2844E-18 -0.34913 -3.3454E-15" />
+    <parent
+      link="front_right_abd_link" />
+    <child
+      link="fr_upper_knee_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.22"
+      upper="1.22"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="fr_lower_knee_link">
+    <inertial>
+      <origin
+        xyz="2.7756E-17 -1.3878E-17 -0.0775"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_lower_knee_joint"
+    type="continuous">
+    <origin
+      xyz="0 -0.008 -0.04"
+      rpy="-1.3511E-15 1.3247 -1.2659E-15" />
+    <parent
+      link="fr_upper_knee_link" />
+    <child
+      link="fr_lower_knee_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="back_body_link">
+    <inertial>
+      <origin
+        xyz="-0.088631 -3.0557E-07 0.019269"
+        rpy="0 0 0" />
+      <mass
+        value="1.43" />
+      <inertia
+        ixx="0.0022927"
+        ixy="-5.8531E-09"
+        ixz="-7.6887E-08"
+        iyy="0.00058938"
+        iyz="4.2524E-07"
+        izz="0.0026252" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/back_body_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/back_body_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_back_body_spine_joint"
+    type="fixed">
+    <origin
+      xyz="-0.051053 0 0"
+      rpy="-3.1503E-15 1.7035E-16 -1.0297E-14" />
+    <parent
+      link="base_link" />
+    <child
+      link="back_body_link" />
+    <!-- <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-0.26"
+      upper="0.26"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" /> -->
+  </joint>
+  <link
+    name="back_left_abd_link">
+    <inertial>
+      <origin
+        xyz="4.118E-05 -0.032715 -0.048093"
+        rpy="0 0 0" />
+      <mass
+        value="0.277" />
+      <inertia
+        ixx="1.1789E-05"
+        ixy="2.5858E-08"
+        ixz="1.1409E-07"
+        iyy="4.0497E-05"
+        iyz="-5.2784E-06"
+        izz="4.3082E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_left_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_left_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_back_left_abd_joint"
+    type="revolute">
+    <origin
+      xyz="-0.0857 0.11512 0.007393"
+      rpy="-4.4959E-07 -3.1031E-16 -5.0331E-14" />
+    <parent
+      link="back_body_link" />
+    <child
+      link="back_left_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-0.06"
+      upper="-3.92"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="bl_upper_hip_link">
+    <inertial>
+      <origin
+        xyz="1.793E-07 2.498E-16 -0.054218"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_bl_upper_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.0175 -0.0015 -0.0385"
+      rpy="-4.7626E-15 0.7854 3.3627E-15" />
+    <parent
+      link="back_left_abd_link" />
+    <child
+      link="bl_upper_hip_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-0.78"
+      upper="0.78"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="bl_lower_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.034185 0.00011378 -0.11157"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="9.59277e-06"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-06"
+        iyy="9.59277e-06"
+        iyz="3.5983E-08"
+        izz="9.59277e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bl_lower_hip_joint"
+    type="continuous">
+    <origin
+      xyz="0 0.0045 -0.12"
+      rpy="3.8659E-14 -1.4394 -3.8737E-14" />
+    <parent
+      link="bl_upper_hip_link" />
+    <child
+      link="bl_lower_hip_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="bl_upper_knee_link">
+    <inertial>
+      <origin
+        xyz="0 1.3878E-17 -0.014638"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_bl_upper_knee_joint"
+    type="revolute">
+    <origin
+      xyz="0.0175 -0.0015 -0.0385"
+      rpy="-6.7366E-18 -0.34907 3.4938E-15" />
+    <parent
+      link="back_left_abd_link" />
+    <child
+      link="bl_upper_knee_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.22"
+      upper="1.22"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="bl_lower_knee_link">
+    <inertial>
+      <origin
+        xyz="1.301E-18 0 -0.0775"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bl_lower_knee_joint"
+    type="continuous">
+    <origin
+      xyz="0 0.008 -0.04"
+      rpy="-1.9439E-16 1.3245 -1.3657E-16" />
+    <parent
+      link="bl_upper_knee_link" />
+    <child
+      link="bl_lower_knee_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="back_right_abd_link">
+    <inertial>
+      <origin
+        xyz="-4.118E-05 0.032715 -0.048093"
+        rpy="0 0 0" />
+      <mass
+        value="0.277" />
+      <inertia
+        ixx="1.1789E-05"
+        ixy="2.5858E-08"
+        ixz="-1.1409E-07"
+        iyy="4.0497E-05"
+        iyz="5.2784E-06"
+        izz="4.3082E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_right_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/front_right_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_back_right_abd_joint"
+    type="revolute">
+    <origin
+      xyz="-0.0857 -0.11512 0.007393"
+      rpy="4.4959E-07 8.3667E-16 1.0447E-14" />
+    <parent
+      link="back_body_link" />
+    <child
+      link="back_right_abd_link" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-0.06"
+      upper="-3.92"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="br_upper_hip_link">
+    <inertial>
+      <origin
+        xyz="1.793E-07 2.3592E-16 -0.054218"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_br_upper_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.0175 0.0015 -0.0385"
+      rpy="-5.0242E-15 0.7854 4.6722E-14" />
+    <parent
+      link="back_right_abd_link" />
+    <child
+      link="br_upper_hip_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-0.78"
+      upper="0.78"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="br_lower_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.034185 0.00011378 -0.11157"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="9.59277e-06"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-06"
+        iyy="9.59277e-06"
+        iyz="3.5983E-08"
+        izz="9.59277e-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="br_lower_hip_joint"
+    type="continuous">
+    <origin
+      xyz="0 -0.0045 -0.12"
+      rpy="3.8983E-14 -1.4388 -3.8443E-14" />
+    <parent
+      link="br_upper_hip_link" />
+    <child
+      link="br_lower_hip_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="br_upper_knee_link">
+    <inertial>
+      <origin
+        xyz="2.7756E-17 -1.3878E-17 -0.014638"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_upper_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor_br_upper_knee_joint"
+    type="revolute">
+    <origin
+      xyz="0.0175 0.0015 -0.0385"
+      rpy="1.0343E-16 -0.34907 4.7367E-14" />
+    <parent
+      link="back_right_abd_link" />
+    <child
+      link="br_upper_knee_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.22"
+      upper="1.22"
+      effort="100"
+      velocity="100" />
+    <dynamics
+      damping="0"
+      friction="0" />
+  </joint>
+  <link
+    name="br_lower_knee_link">
+    <inertial>
+      <origin
+        xyz="-2.6021E-17 -2.7756E-17 -0.0775"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia
+        ixx="1.4068E-05"
+        ixy="5.4371E-09"
+        ixz="-2.1257E-09"
+        iyy="1.4389E-05"
+        iyz="3.5983E-09"
+        izz="1.4389E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch_two_abduction_urdf/meshes/fl_lower_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="br_lower_knee_joint"
+    type="continuous">
+    <origin
+      xyz="0 -0.008 -0.04"
+      rpy="7.1694E-17 1.3245 4.3167E-17" />
+    <parent
+      link="br_upper_knee_link" />
+    <child
+      link="br_lower_knee_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+</robot>

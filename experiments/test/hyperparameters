@@ -1,0 +1,11 @@
+learning_rate: 0.05
+noise: 0.04
+env_name: Stoch2-v0
+episode_length: 1.0
+direction ratio: 2.0
+Normal initialization: 0
+Gait: trot
+Incline_Orientaion_Anti-Clockwise: True
+domain_Randomization: 0
+Curriculmn introduced at iteration: 30
+Training with tStrut IP, with 13 degree

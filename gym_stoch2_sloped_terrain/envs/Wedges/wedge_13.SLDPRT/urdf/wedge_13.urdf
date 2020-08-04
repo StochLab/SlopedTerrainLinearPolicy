@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="wedge_13.SLDPRT">
+  <link
+    name="wedge_13.SLDPRT">
+    <inertial>
+      <origin
+        xyz="-4.5107E-17 1.17739777888252E-18 0.019229"
+        rpy="0 0 0" />
+      <mass
+        value="922.99" />
+      <inertia
+        ixx="311.42"
+        ixy="-3.4694E-14"
+        ixz="-6.4384E-15"
+        iyy="388.33"
+        iyz="1.79579858495079E-14"
+        izz="692.24" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5707963267949 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wedge_13.SLDPRT/meshes/wedge_13.SLDPRT.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.9 0.2 1" />
+        <texture
+          filename="package://wedge_13.SLDPRT/textures/" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="1.5707963267949 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wedge_13.SLDPRT/meshes/wedge_13.SLDPRT.STL" />
+      </geometry>
+    </collision>
+  </link>
+</robot>

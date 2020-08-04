@@ -1,0 +1,7 @@
+learning_rate: 0.05
+noise: 0.04
+env_name: Stoch2-v0episode_length: 400.0
+direction ratio: 3.0136986301369864
+Normal initialization: 0
+Gait: trot
+Training with tStrut IP with forwd dist more weightage and penalty
