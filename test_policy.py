@@ -68,8 +68,6 @@ if __name__ == '__main__':
 	green('\nMotor saturation torque:'),red(env.clips))
 
 	for i_step in range(args.EpisodeLength):
-		# print('Roll:',math.degrees(env.support_plane_estimated_roll),
-		#       'Pitch:',math.degrees(env.support_plane_estimated_pitch))
 		action = policy.dot(state)
 		state, r, _, angle = env.step(action)
 		
