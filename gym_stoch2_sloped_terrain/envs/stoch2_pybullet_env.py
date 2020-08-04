@@ -136,6 +136,11 @@ class Stoch2Env(gym.Env):
 		self.support_plane_estimated_pitch = 0
 		self.support_plane_estimated_roll = 0
 
+
+		self.pertub_steps = 0
+		self.x_f = 0
+		self.y_f = 0
+
 		## Gym env related mandatory variables
 		observation_high = np.array([10.0] * self._obs_dim)
 		observation_low = -observation_high
@@ -302,6 +307,8 @@ class Stoch2Env(gym.Env):
 	def getlinkmass(self,linkind):
 		m = self._pybullet_client.getDynamicsInfo(self.stoch2,linkind)
 		return m[0]
+	
+
 
 	def Set_Randomization(self, default = False, idx1 = 0, idx2=0,idx3=1,idx0=0,idx11=0,idxc=2, idxp=0, anti_ori=True, deg = 5, ori = 0):
 		if default:

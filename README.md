@@ -61,6 +61,7 @@ the following test parameters can be changed while testing the policy,
 |--FrontMass|mass to be loaded to the front half of the body| float |0.0 to 0.15|Kilograms(Kg)|
 |--BackMass|mass to be loaded to the  rear half of the body| float |0.0 to 0.15|Kilograms(Kg)|
 |--RandomTest|flag to activate random sampling| bool |True or False|unitless|
+|--ApplyPerturbForce|perturbation force to applied perpendicular to the heading direction of the robot|float|-120 to 120|Newton(N)|
 |--seed|seed for random sampling| int | - |unitless|
 |--AddImuNoise| flag to add noise in IMU readings | bool |True or False|unitless|
 
@@ -80,7 +81,4 @@ Thus, for a
 2. For loading the policies from other directories, you might have to change the path from within the *test_policy.py* file.
 
 
-## To do:
-
-* User choice to give perturbation (may b a parameter in prev point itself)
 
