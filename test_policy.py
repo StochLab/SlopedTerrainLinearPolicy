@@ -25,7 +25,7 @@ if __name__ == '__main__':
 	parser.add_argument('--RandomTest', help='flag to sample test values randomly ', type=bool, default=False)
 	parser.add_argument('--seed', help='seed for the random sampling', type=float, default=100)
 	parser.add_argument('--EpisodeLength', help='number of gait steps of a episode', type=int, default=1000)
-	parser.add_argument('--ApplyPerturbForce', help='perturbation force to applied perpendicular to the heading direction of the robot', type=float, default=0.0)
+	parser.add_argument('--PerturbForce', help='perturbation force to applied perpendicular to the heading direction of the robot', type=float, default=0.0)
 
 	parser.add_argument('--AddImuNoise', help='flag to add noise in IMU readings', type=bool, default=False)
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 		env.SetLinkMass(11,args.BackMass)
 		env.clips = args.MotorStrength
 		env.pertub_steps = 300
-		env.y_f = args.ApplyPerturbForce
+		env.y_f = args.PerturbForce
 
 	state = env.reset()
 	if(env.incline_ori_anti == True):
