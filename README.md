@@ -3,12 +3,12 @@
 ### Introduction:
 This is the main code base accompanying the paper with the above title, under review in CoRL 2020.
 
-### Installation:
+### Getting Started:
 To install the package and its dependenclies run 
 
 Inside the folder, Stoch2_gym_env:        
                 
-                python3 -m pip install .
+        python3 -m pip install .
 
 ### To make an initial policy:
 As explained in the paper, we take a guided learning approach wherein the role of a initial policy is quite crucial.To train your own initial policy,run the following command
