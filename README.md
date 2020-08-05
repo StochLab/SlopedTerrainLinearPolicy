@@ -31,7 +31,8 @@ The above command starts the training in the default and the best by far hyperpa
 | --curi_learn |Number of learning iteration before changing the curriculum      |int |
 | --eval_step |Number of policy iterations before a policy update     |int |
 | --episode_length|Horizon of a episode|int |
-
+| --domain_Rand|randomizatize the dynamics of the environment while training|int(ony 0 or 1)|
+| --episode_length|Horizon of a episode|int |
 For example,
 
       python train_policy.py --lr 0.05 --noise 0.04 --logdir testDir --policy init_policy_TS.npy --msg "Training with some paramters" --episode_length 400
