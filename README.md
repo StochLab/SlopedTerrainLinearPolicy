@@ -8,7 +8,9 @@ To install the package and its dependenclies run
 
 Inside the folder, Stoch2_gym_env:        
                 
-        python3 -m pip install .
+        python -m pip install .
+
+The code base was tested with gym (version = 0.17.2), pybullet (2.8.5) with the python version 3.6.9.However it is expected to work fine for any future versions of these packages, though they havent been tested.
 
 ### To make an initial policy:
 As explained in the paper, we take a guided learning approach wherein the role of a initial policy is quite crucial.To train your own initial policy,run the following command
