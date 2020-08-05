@@ -22,7 +22,7 @@ This saves the initial policy as *filename.npy* in the initial_policies folder.T
 **Note:** The initial policies are by default saved in the *initial_policies* folder.
 
 ### To train the linear policy with ARS
-This is where the ARS trainining starts, with the initial polciy trainied in the previous step.
+This is where the ARS trainining starts,with the initial polciy trainied in the previous step.
         
         python train_policy.py 
 
