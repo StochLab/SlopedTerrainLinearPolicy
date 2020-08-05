@@ -9,7 +9,7 @@ As explained in the paper, we take a guided learning approach wherein the role o
         
         python create_initial_policy.py --policyName filename
 
-This save the initial policy as *filename.npy* in the initial_policies folder.This is to be loaded later as the initial polcy when you want train your own polciy.However there are a few initial policies present in the same folder which could be directly used to start the ARS training.
+This saves the initial policy as *filename.npy* in the initial_policies folder.This file is to be loaded later as the initial polcy when you want train your own polciy.However there are a few initial policies present in the same folder which could be directly used to start the ARS training.
 
 **Note:** The initial policies are by default saved in the *initial_policies* folder.
 
@@ -18,7 +18,7 @@ This is where the ARS trainining starts, with the initial polciy trainied in the
         
         python train_policy.py 
 
-The above command starts the training in the default and the best by far hyperparameter and experiment settings.However, the following parameters can be customized in the training as desired b the user.
+The above command starts the training in the default and the best by far hyperparameters and experiment settings. However, the following parameters can be customized in the training as desired by the user.
 
 | Parameter     |About        |  type |
 |:-------------:|:-------------:| -----:|
@@ -77,7 +77,7 @@ Thus, for a
 
 **Note:** 
 
-1. The test policies are by default loaded from the path *experiments/**given_logdir_name**/iterations/best_policy.npy"*, if not specified it loads the best ever policy pre trained by us.
+1. The test policies are by default loaded from the path *experiments/**given_logdir_name**/iterations/best_policy.npy"*, if not specified it loads the best ever policy pre-trained by us.
 2. For loading the policies from other directories, you might have to change the path from within the *test_policy.py* file.
 
 
