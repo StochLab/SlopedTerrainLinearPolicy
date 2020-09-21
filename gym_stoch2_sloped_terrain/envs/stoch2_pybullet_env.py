@@ -20,8 +20,8 @@ from scipy.interpolate import interp1d
 LEG_POSITION = ["fl_", "bl_", "fr_", "br_"]
 KNEE_CONSTRAINT_POINT_RIGHT = [0.014, 0, 0.076] #hip
 KNEE_CONSTRAINT_POINT_LEFT = [0.0,0.0,-0.077] #knee
-RENDER_HEIGHT = 720 #360
-RENDER_WIDTH = 960 #480
+RENDER_HEIGHT = 720 
+RENDER_WIDTH = 960 
 PI = np.pi
 no_of_points = 100
 
@@ -38,8 +38,8 @@ class Stoch2Env(gym.Env):
 				 render = False,
 				 on_rack = False,
 				 gait = 'trot',
-				 phase =   [0, no_of_points, no_of_points,0],#[FR, FL, BR, BL] #[no_of_points/2, 3*no_of_points/2, no_of_points, 0],
-				 action_dim = 16,
+				 phase =   [0, no_of_points, no_of_points,0],#[FR, FL, BR, BL] 
+				 action_dim = 20,
 				 collect_data = False,
 				 end_steps = 1000,
 				 stairs = False,
@@ -63,11 +63,12 @@ class Stoch2Env(gym.Env):
 
 		self._theta = 0
 
-		self._update_action_every = 1/50  # update is every 50% of the step i.e., theta goes from 0 to pi/2
-		self._frequency = 2.5 #change back to 1
+		self._update_action_every = 1/50 
+		self._frequency = 2.5 
 		self.frequency_weight = 1
 		self.termination_steps = end_steps
 		self.incline_ori_anti = anti_clock_ori
+		self.downhill = False
 
 		#PD gains
 		self._kp = 200
@@ -87,8 +88,9 @@ class Stoch2Env(gym.Env):
 		self._distance_limit = float("inf")
 
 		self.current_com_height = 0.243
+		
 		#wedge_parameters
-		self.wedge_start = 0.5 #1.5
+		self.wedge_start = 0.5 
 		self.wedge_halflength = 2
 
 		self.collect_data = collect_data
@@ -116,8 +118,9 @@ class Stoch2Env(gym.Env):
 		self.clips=7
 
 		self.friction = 0.6
-
-		self.obs_queue = deque([0]*9, maxlen=9)#observation queue
+		self.ori_history_length = 3
+		self.ori_history_queue = deque([0]*3*self.ori_history_length, 
+		                            maxlen=3*self.ori_history_length)#observation queue
 
 		self.step_disp = deque([0]*100, maxlen=100)
 		self.stride = 5
@@ -142,7 +145,8 @@ class Stoch2Env(gym.Env):
 		self.y_f = 0
 
 		## Gym env related mandatory variables
-		observation_high = np.array([10.0] * self._obs_dim)
+		self._obs_dim = 3*self.ori_history_length + 2 #[r,p,y]x previous time steps, suport plane roll and pitch
+		observation_high = np.array([np.pi/2] * self._obs_dim)
 		observation_low = -observation_high
 		self.observation_space = spaces.Box(observation_low, observation_high)
 
@@ -188,15 +192,14 @@ class Stoch2Env(gym.Env):
 																				 -math.radians(self.incline_deg)*math.cos(self.incline_ori), 0 ])
 
 			self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, self.incline_ori])
-			wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/Side_hill_wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
+			wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
 			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
 			self.SetWedgeFriction(0.7)
 
-		#Change this to suit your path
-		model_path = 'gym_stoch2_sloped_terrain/envs/stoch_two_abduction_urdf/urdf/stoch_two_abduction_urdf.urdf'
+		model_path = 'gym_stoch2_sloped_terrain/envs/robots/stoch_two_abduction_urdf/urdf/stoch_two_abduction_urdf.urdf'
 		self.stoch2 = self._pybullet_client.loadURDF(model_path, self.INIT_POSITION,self.INIT_ORIENTATION)
 
-		self._joint_name_to_id, self._motor_id_list, self._motor_id_list_obs_space = self.BuildMotorIdList()
+		self._joint_name_to_id, self._motor_id_list  = self.BuildMotorIdList()
 
 		num_legs = 4
 		for i in range(num_legs):
@@ -260,10 +263,13 @@ class Stoch2Env(gym.Env):
 																				      -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
 
 			self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * abs(self.wedge_start)
-
+		
+			# if(self.downhill == True):
+			# 	self.wedgePos = [-3,-0.7,self.wedge_halfheight]
+			# 	self.robot_landing_height += 0.03
 			self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
 
-			wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/Side_hill_wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
+			wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
 
 			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
 			self.SetWedgeFriction(0.7)
@@ -316,7 +322,7 @@ class Stoch2Env(gym.Env):
 			extra_link_mass=[0,0.05,0.1,0.15]
 			cli=[5.2,6,7,8]
 			pertub_range = [0, -60, 60, -100, 100]
-			self.pertub_steps = 150 #90 - 15*idx1
+			self.pertub_steps = 150 
 			self.x_f = 0
 			self.y_f = pertub_range[idxp]
 			self.incline_deg = deg + 2*idx1
@@ -337,8 +343,8 @@ class Stoch2Env(gym.Env):
 			self.x_f = 0
 			self.y_f = pertub_range[random.randint(0,4)]
 			self.incline_deg = avail_deg[random.randint(0,3)]
-			self.incline_ori = (PI/12)*random.randint(0,6) #resulation of 15 degree
-			self.new_fric_val =np.round(np.clip(np.random.normal(0.6,0.08),0.55,0.8),2) #0.01*random.randint(50, 70)
+			self.incline_ori = (PI/12)*random.randint(0,6) #resolution of 15 degree
+			self.new_fric_val =np.round(np.clip(np.random.normal(0.6,0.08),0.55,0.8),2)
 			self.friction=self.SetFootFriction(self.new_fric_val)
 			i=random.randint(0,3)
 			self.FrontMass=self.SetLinkMass(0,extra_link_mass[i])
@@ -356,7 +362,7 @@ class Stoch2Env(gym.Env):
 		else:
 			avail_deg = [5, 7, 9, 11]
 			self.incline_deg = avail_deg[random.randint(0, 3)]
-			self.incline_ori = (PI / 12) * random.randint(0, 6)  # resulation of 15 degree
+			self.incline_ori = (PI / 12) * random.randint(0, 6)  # resolution of 15 degree
 			self.incline_ori_anti = anti_ori
 
 
@@ -430,7 +436,7 @@ class Stoch2Env(gym.Env):
 
 
 	def do_simulation(self, action, n_frames, callback=None):
-		omega = 2 * no_of_points * self._frequency  #Maybe remove later
+		omega = 2 * no_of_points * self._frequency  
 		self.action = action
 		ii = 0
 
@@ -500,7 +506,6 @@ class Stoch2Env(gym.Env):
 
 		if self._n_steps >= self.termination_steps:
 			done = True
-			#print('%s steps finished. Terminated' % self._n_steps)
 			penalty = 0
 		else:
 			if abs(RPY[0]) > math.radians(30):
@@ -538,14 +543,17 @@ class Stoch2Env(gym.Env):
 	
 		desired_height = (robot_height_from_support_plane)/math.cos(wedge_angle) + math.tan(wedge_angle)*((pos[0])*math.cos(self.incline_ori)+ 0.5)
 
+		'''
+		# code to calcuate height of the robot along the support plane normal
 
-		# if(pos[0]-self.wedgePos[0]+0.5 > 1.4):
-		# 	real_height_along_normal = self.current_com_height - 1.5*math.tan(wedge_angle)
-		# elif(pos[0]-self.wedgePos[0]+0.5 <0):
-		# 	real_height_along_normal = self.current_com_height
-		# else:
-		# 	real_height_along_normal = (self.current_com_height - math.tan(wedge_angle)*((pos[0]-self.wedgePos[0])*math.cos(self.incline_ori)+ 0.5))*math.cos(math.radians(self.incline_deg))
-		# self.rh_along_normal = real_height_along_normal
+		if(pos[0]-self.wedgePos[0]+0.5 > 1.4):
+			real_height_along_normal = self.current_com_height - 1.5*math.tan(wedge_angle)
+		elif(pos[0]-self.wedgePos[0]+0.5 <0):
+			real_height_along_normal = self.current_com_height
+		else:
+			real_height_along_normal = (self.current_com_height - math.tan(wedge_angle)*((pos[0]-self.wedgePos[0])*math.cos(self.incline_ori)+ 0.5))*math.cos(math.radians(self.incline_deg))
+		self.rh_along_normal = real_height_along_normal
+		'''
 
 		roll_reward = np.exp(-45 * ((RPY[0]-self.support_plane_estimated_roll) ** 2))
 		pitch_reward = np.exp(-45 * ((RPY[1]-self.support_plane_estimated_pitch) ** 2))
@@ -597,9 +605,9 @@ class Stoch2Env(gym.Env):
 		for val in RPY:
 			if(self.add_IMU_noise):
 				val = self.add_noise(val)
-			self.obs_queue.append(val)
+			self.ori_history_queue.append(val)
 
-		obs = np.concatenate((self.obs_queue, [self.support_plane_estimated_roll,self.support_plane_estimated_pitch])).ravel()
+		obs = np.concatenate((self.ori_history_queue, [self.support_plane_estimated_roll,self.support_plane_estimated_pitch])).ravel()
 
 		return obs
 
@@ -661,15 +669,9 @@ class Stoch2Env(gym.Env):
 						"motor_back_left_abd_joint",
 						"motor_back_right_abd_joint"]
 
-
-		MOTOR_NAMES2 = [ "motor_fl_upper_hip_joint",
-						"motor_fl_upper_knee_joint",
-						"motor_bl_upper_hip_joint",
-						"motor_bl_upper_knee_joint"]
 		motor_id_list = [joint_name_to_id[motor_name] for motor_name in MOTOR_NAMES]
-		motor_id_list_obs_space = [joint_name_to_id[motor_name] for motor_name in MOTOR_NAMES2]
 
-		return joint_name_to_id, motor_id_list, motor_id_list_obs_space
+		return joint_name_to_id, motor_id_list
 
 	def ResetLeg(self, leg_id, add_constraint, standstilltorque=10):
 		leg_position = LEG_POSITION[leg_id]

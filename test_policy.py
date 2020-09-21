@@ -54,7 +54,6 @@ if __name__ == '__main__':
 		env.clips = args.MotorStrength
 		env.pertub_steps = 300
 		env.y_f = args.PerturbForce
-
 	state = env.reset()
 	if(env.incline_ori_anti == True):
 		wedgeori = env.incline_ori

@@ -36,7 +36,9 @@ class Serial2RKin():
         '''
         valid = True
         q = np.zeros(2, float)
-        [x, y] = ee_pos - self.base_pivot
+        x_y_points = np.array(ee_pos) - np.array(self.base_pivot)
+        [x, y] = x_y_points.tolist() 
+
         [l1, l2] = self.link_lengths
         # Check if the end-effector point lies in the workspace of the manipulator
         if ((x**2 + y**2) > (l1+l2)**2) or ((x**2 + y**2) < (l1-l2)**2):

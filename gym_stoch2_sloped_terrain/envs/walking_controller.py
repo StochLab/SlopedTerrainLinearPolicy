@@ -13,6 +13,7 @@ from __future__ import division
 from __future__ import print_function
 from dataclasses import dataclass
 from collections import namedtuple
+from utils.ik_class import Stoch2Kinematics
 import os
 import numpy as np
 from scipy.linalg import solve
@@ -63,10 +64,7 @@ class WalkingController():
         self.MOTOROFFSETS = [2.3562,1.2217]
         self.body_width = 0.24
         self.body_length = 0.37
-
-        #Trapezium up down limit [ -0.145 , -0.24] left right limit []
-        self._pts = np.array([[-0.068,-0.24],[-0.115,-0.24],[-0.065,-0.145],[0.065,-0.145],[0.115,-0.24],[0.068,-0.24]])
-        # self.new_pts = np.array([[-0.058,-0.24],[-0.105,-0.24],[-0.055,-0.145],[0.075,-0.145],[0.125,-0.24],[0.078,-0.24]])
+        self.Stoch2_IK_2D = Stoch2Kinematics()
         self.comy = comy
 
     def update_leg_theta(self,theta):
@@ -150,89 +148,11 @@ class WalkingController():
         
         return leg_abduction_angles,leg_motor_angles
     
-
-    def _inverse_stoch2(self, x,y,Leg):
-
-        l1 =    Leg[0]
-        l2 =    Leg[1]
-        l4 =    Leg[2]
-        l5 =    Leg[3]
-        le =    Leg[5]
-        tq1 =   Leg[6]
-        tq2 =   Leg[7]
-        delta = Leg[4]
-        xb = [[0,0],[0,0]]
-        yb = [[0,0],[0,0]]
-        phid = [0,0];psi = [0,0]; theta = [0,0]
-        R_base = [[0,0],[0.035,0]]
-        xb[0] = R_base[0][0];xb[1] = R_base[1][0]
-        yb[0] = R_base[0][1];yb[1] = R_base[1][1]
-        l3 = np.sqrt((x-xb[0])**2+(y-yb[0])**2)
-        theta[0] = np.arctan2((y-yb[0]),(x-xb[0]))
-        zeta = (l3**2 - l1**2 -l2**2)/(2*l1*l2)
-        zeta = np.sign(zeta) if abs(zeta) > 1 else zeta
-        phid[0] = np.arccos(zeta)
-        psi[0] = np.arctan2(l2*np.sin(phid[0]),(l1+l2*np.cos(phid[0])))
-        q1 = theta[0] - psi[0]
-        q2 = q1 + phid[0]
-        xm = l1*np.cos(q1)+l2*np.cos(q2)
-        ym = l1*np.sin(q1)+l2*np.sin(q2)
-        xi = (xm+xb[0])
-        yi = (ym+yb[0])
-
-        xi = xb[0] + l1*np.cos(q1) + 0.04*np.cos(q2-tq1)
-        yi = yb[0] + l1*np.sin(q1) + 0.04*np.sin(q2-tq1)
-        R = [xi,yi]
-        l6 = np.sqrt(((xi-xb[1])**2+(yi-yb[1])**2))
-        theta[1] = np.arctan2((yi-yb[1]),(xi-xb[1]))
-        Zeta = (l6**2 - l4**2 - l5**2)/(2*l5*l4)
-        leg = 'left'
-        Zeta = np.sign(Zeta) if abs(Zeta) > 1 else Zeta
-        phid[1] = np.arccos(Zeta)
-        psi[1] = np.arctan2(l5*np.sin(phid[1]),(l4+l5*np.cos(phid[1])))
-        q3 = theta[1]+psi[1]
-        q4 = q3-phid[1]
-        xm = l4*np.cos(q3)+l5*np.cos(q4)+xb[1]
-        ym = l4*np.sin(q3)+l5*np.sin(q4)+yb[1]
-
-        if Zeta == 1:
-            [q1, q2] = self._inverse_new(xm,ym,delta,Leg)
-
-        return [q3, q1, q4, q2]
-
-    def _inverse_new(self, xm,ym,delta,Leg):
-
-        l1 = Leg[0]
-        l2 = Leg[1]-Leg[4]
-        l4 = Leg[2]
-        l5 = Leg[3]
-        delta = Leg[4]
-        xb = [[0,0],[0,0]]
-        yb = [[0,0],[0,0]]
-        phid = [0,0];psi = [0,0]; theta = [0,0]
-        R_base = [[1,0],[-1,0]]
-        xb[0] = R_base[0][0];xb[1] = R_base[1][0]
-        yb[0] = R_base[0][1];yb[1] = R_base[1][1]
-        l3 = np.sqrt((xm-xb[0])**2+(ym-yb[0])**2)
-        theta[0] = np.arctan2((ym-yb[0]),(xm-xb[0]))
-        zeta = (l3**2 - l1**2 -l2**2)/(2*l1*l2)
-        zeta = np.sign(zeta) if abs(zeta) > 1 else zeta
-        phid[0] = np.arccos(zeta)
-        psi[0] = np.arctan2(l2*np.sin(phid[0]),(l1+l2*np.cos(phid[0])))
-        q1 = theta[0] + psi[0]
-        q2 = q1 - phid[0]
-        xm = l1*np.cos(q1)+l2*np.cos(q2)
-        ym = l1*np.sin(q1)+l2*np.sin(q2)
-
-        return [q1,q2]
-
     def _inverse_3D(self, x, y, z, Leg):
         theta = np.arctan2(z,-y)
         new_coords = np.array([x,-y/np.cos(theta) - 0.035,z])
-        motor_knee, motor_hip, _, _ = self._inverse_stoch2(new_coords[0], -new_coords[1], Leg)
+        _,[motor_hip,_,_,motor_knee] = self.Stoch2_IK_2D.inverseKinematics(x = [new_coords[0], -new_coords[1]])
         return [motor_knee, motor_hip, theta]
-
-
 
     def _update_leg_phi_val(self, leg_phi):
         
@@ -241,24 +161,6 @@ class WalkingController():
         self.back_right.phi =   leg_phi[2]
         self.back_left.phi =  leg_phi[3]
     
-    def _update_leg_phi(self, radius):
-        if(radius >= 0):
-            self.front_left.phi =  np.arctan2(self.body_length/2, radius + self.body_width/2)
-            self.front_right.phi = -np.arctan2(self.body_length/2, radius - self.body_width/2)
-            self.back_left.phi = -np.arctan2(self.body_length/2, radius + self.body_width/2)
-            self.back_right.phi =  np.arctan2(self.body_length/2, radius - self.body_width/2)
-            PHI = [self.front_right.phi,self.front_left.phi,self.back_right.phi,self.back_left.phi]
-            np.save("Sim_States/action_PHI_"+str(radius)+".npy", PHI)
-
-        if(radius<0):
-            newr = -1*radius
-            self.front_right.phi =  np.arctan2(self.body_length/2, newr + self.body_width/2)
-            self.front_left.phi = -np.arctan2(self.body_length/2, newr - self.body_width/2)
-            self.back_right.phi = -np.arctan2(self.body_length/2, newr + self.body_width/2)
-            self.back_left.phi =  np.arctan2(self.body_length/2, newr - self.body_width/2)
-            PHI = [self.front_right.phi, self.front_left.phi, self.back_right.phi, self.back_left.phi]
-            np.save("Sim_States/action_PHI_" + str(radius) + ".npy", PHI)
-
     def _update_leg_step_length_val(self, step_length):
         self.front_right.step_length = step_length[0]
         self.front_left.step_length = step_length[1]
@@ -266,42 +168,6 @@ class WalkingController():
         self.back_left.step_length = step_length[3]
 
 
-    def _update_leg_step_length(self, step_length, radius):
-        if(abs(radius) <= 0.12):
-            self.front_right.step_length = step_length
-            self.front_left.step_length = step_length 
-            self.back_right.step_length = step_length 
-            self.back_left.step_length = step_length
-
-        elif(radius > 0.12):
-            self.front_right.step_length = step_length * (radius - self.body_width/2)/radius
-            self.front_left.step_length = step_length * (radius + self.body_width/2)/radius
-            self.back_right.step_length = step_length * (radius - self.body_width/2)/radius
-            self.back_left.step_length = step_length * (radius + self.body_width/2)/radius
-
-            SL = [self.front_right.step_length, self.front_left.step_length,self.back_right.step_length,self.back_left.step_length]
-            np.save("Sim_States/action_SL_"+str(radius)+".npy", SL)
-
-        elif(radius < -0.12):
-            newr = radius*-1
-            self.front_left.step_length = step_length * (newr- self.body_width/2)/newr
-            self.front_right.step_length = step_length * (newr + self.body_width/2)/newr
-            self.back_left.step_length = step_length * (newr - self.body_width/2)/newr
-            self.back_right.step_length = step_length *(newr + self.body_width/2)/newr
-
-            SL = [self.front_right.step_length, self.front_left.step_length, self.back_right.step_length,
-                  self.back_left.step_length]
-            np.save("Sim_States/action_SL_" + str(radius) + ".npy", SL)
-
-    def _update_leg_step_length_footstep(legs, footstep, last_footstep):
-        legs.front_left.step_length = ((footstep.front_left.x - last_footstep.front_left.x)**2 + (footstep.front_left.z - last_footstep.front_left.z)**2)**0.5
-        legs.front_right.step_length = ((footstep.front_right.x - last_footstep.front_right.x)**2 + (footstep.front_right.z - last_footstep.front_right.z)**2)**0.5
-        legs.back_left.step_length = ((footstep.back_left.x - last_footstep.back_left.x)**2 + (footstep.back_left.z - last_footstep.back_left.z)**2)**0.5
-        legs.back_right.step_length = ((footstep.back_right.x - last_footstep.back_right.x)**2 + (footstep.back_right.z - last_footstep.back_right.z)**2)**0.5
-
-    def _update_leg_transformation_matrix(legs, footstep, last_footstep):
-        
-        pass
 def constrain_abduction(angle):
     if(angle < 0):
         angle = 0

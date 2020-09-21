@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from gym_stoch2_sloped_terrain.envs.planeEstimation.ik_class import Stoch2Kinematics
+from utils.ik_class import Stoch2Kinematics
 from dataclasses import dataclass
 from collections import namedtuple
 from collections import deque
