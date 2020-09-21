@@ -19,8 +19,8 @@ if __name__ == '__main__':
 	parser.add_argument('--FrontMass', help='mass to be added in the first', type=float, default=0)
 	parser.add_argument('--BackMass', help='mass to be added in the back', type=float, default=0)
 	parser.add_argument('--FrictionCoeff', help='foot friction value to be set', type=float, default=0.6)
-	parser.add_argument('--WedgeIncline', help='wedge incline degree of the wedge', type=int, default=9)
-	parser.add_argument('--WedgeOrientation', help='wedge orientation degree of the wedge', type=float, default=30)
+	parser.add_argument('--WedgeIncline', help='wedge incline degree of the wedge', type=int, default=13)
+	parser.add_argument('--WedgeOrientation', help='wedge orientation degree of the wedge', type=float, default=45)
 	parser.add_argument('--MotorStrength', help='maximum motor Strength to be applied', type=float, default=7.0)
 	parser.add_argument('--RandomTest', help='flag to sample test values randomly ', type=bool, default=False)
 	parser.add_argument('--seed', help='seed for the random sampling', type=float, default=100)
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 	if(args.WedgeIncline == 0):
 		WedgePresent = True
 	
-	env = e.Stoch2Env(render=True, wedge=WedgePresent, stairs = False,seed_value=args.seed,
+	env = e.Stoch2Env(render=True, wedge=WedgePresent, stairs = False, downhill= True, seed_value=args.seed,
 				      on_rack=False, gait = 'trot',IMU_Noise=args.AddImuNoise)
 	steps = 0
 	t_r = 0

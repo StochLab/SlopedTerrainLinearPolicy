@@ -43,6 +43,7 @@ class Stoch2Env(gym.Env):
 				 collect_data = False,
 				 end_steps = 1000,
 				 stairs = False,
+				 downhill =False,
 				 seed_value = 100,
 				 wedge = True,
 				 anti_clock_ori = True,
@@ -68,7 +69,7 @@ class Stoch2Env(gym.Env):
 		self.frequency_weight = 1
 		self.termination_steps = end_steps
 		self.incline_ori_anti = anti_clock_ori
-		self.downhill = False
+		self.downhill = downhill
 
 		#PD gains
 		self._kp = 200
@@ -184,15 +185,21 @@ class Stoch2Env(gym.Env):
 
 			self.wedgePos = [0, 0, self.wedge_halfheight]
 
-			self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg))*abs(self.wedge_start)
-
-			self.INIT_POSITION = [self.INIT_POSITION[0],self.INIT_POSITION[1],self.robot_landing_height]
-
-			self.INIT_ORIENTATION =self._pybullet_client.getQuaternionFromEuler([math.radians(self.incline_deg)*math.sin(self.incline_ori),
-																				 -math.radians(self.incline_deg)*math.cos(self.incline_ori), 0 ])
-
 			self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, self.incline_ori])
-			wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
+
+			if not self.downhill:
+				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg))*abs(self.wedge_start)
+
+				self.INIT_POSITION = [self.INIT_POSITION[0],self.INIT_POSITION[1],self.robot_landing_height]
+
+				self.INIT_ORIENTATION =self._pybullet_client.getQuaternionFromEuler([math.radians(self.incline_deg)*math.sin(self.incline_ori),
+																					 -math.radians(self.incline_deg)*math.cos(self.incline_ori), 0 ])
+
+				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
+
+			else:
+				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(self.incline_deg) + ".urdf"
+
 			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
 			self.SetWedgeFriction(0.7)
 
@@ -263,13 +270,17 @@ class Stoch2Env(gym.Env):
 																				      -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
 
 			self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * abs(self.wedge_start)
-		
-			# if(self.downhill == True):
-			# 	self.wedgePos = [-3,-0.7,self.wedge_halfheight]
-			# 	self.robot_landing_height += 0.03
+
 			self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
 
-			wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
+			if self.downhill:
+				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_"+str(self.incline_deg)+".urdf"
+				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * 1.5
+				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
+				self.INIT_ORIENTATION = [0, 0, 0, 1]
+			else:
+				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/ramp_5/urdf/wedge_"+str(self.incline_deg)+".urdf"
+
 
 			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
 			self.SetWedgeFriction(0.7)
