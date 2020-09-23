@@ -38,25 +38,17 @@ class Stoch2Env(gym.Env):
 				 render = False,
 				 on_rack = False,
 				 gait = 'trot',
-				 phase =   [0, no_of_points, no_of_points,0],#[FR, FL, BR, BL] 
+				 phase = [0, no_of_points, no_of_points,0],  #[FR, FL, BR, BL]
 				 action_dim = 20,
 				 collect_data = False,
 				 end_steps = 1000,
-				 stairs = False,
-				 downhill =False,
-				 seed_value = 100,
-				 wedge = True,
-				 anti_clock_ori = True,
 				 IMU_Noise = False,
 				 deg = 5):
 
-		self._is_stairs = stairs
-		self._is_wedge = wedge
+
 		self._is_render = render
 		self._on_rack = on_rack
-		self.rh_along_normal = 0.24
-		self.seed_value = seed_value
-		random.seed(self.seed_value)
+
 		if self._is_render:
 			self._pybullet_client = bullet_client.BulletClient(connection_mode=pybullet.GUI)
 		else:
@@ -68,8 +60,6 @@ class Stoch2Env(gym.Env):
 		self._frequency = 2.5 
 		self.frequency_weight = 1
 		self.termination_steps = end_steps
-		self.incline_ori_anti = anti_clock_ori
-		self.downhill = downhill
 
 		#PD gains
 		self._kp = 200
@@ -93,6 +83,7 @@ class Stoch2Env(gym.Env):
 		#wedge_parameters
 		self.wedge_start = 0.5 
 		self.wedge_halflength = 2
+		self.wedge = [0, 0, 0, 0, 0]
 
 		self.collect_data = collect_data
 		if gait is 'trot':
@@ -134,7 +125,7 @@ class Stoch2Env(gym.Env):
 		self.terrain_pitch = []
 		self.add_IMU_noise = IMU_Noise
 
-		self.INIT_POSITION =[0,0,0.3]
+		self.INIT_POSITION =[0,0,0.58]
 		self.INIT_ORIENTATION = [0, 0, 0, 1]
 
 		self.support_plane_estimated_pitch = 0
@@ -153,21 +144,7 @@ class Stoch2Env(gym.Env):
 
 		action_high = np.array([1] * self._action_dim)
 		self.action_space = spaces.Box(-action_high, action_high)
-		
 		self.hard_reset()
-		self.Set_Randomization(default=True, idx1=2, idx2=2)
-		if(self._is_stairs):
-			boxHalfLength = 0.1
-			boxHalfWidth = 1
-			boxHalfHeight = 0.015
-			sh_colBox = self._pybullet_client.createCollisionShape(self._pybullet_client.GEOM_BOX,halfExtents=[boxHalfLength,boxHalfWidth,boxHalfHeight])
-			boxOrigin = 0.3
-			n_steps = 15
-			self.stairs = []
-			for i in range(n_steps):
-				step =self._pybullet_client.createMultiBody(baseMass=0,baseCollisionShapeIndex = sh_colBox,basePosition = [boxOrigin + i*2*boxHalfLength,0,boxHalfHeight + i*2*boxHalfHeight],baseOrientation=[0.0,0.0,0.0,1])
-				self.stairs.append(step)
-				self._pybullet_client.changeDynamics(step, -1, lateralFriction=0.8)
 
 
 	def hard_reset(self):
@@ -179,41 +156,32 @@ class Stoch2Env(gym.Env):
 		self._pybullet_client.changeVisualShape(self.plane,-1,rgbaColor=[1,1,1,0.9])
 		self._pybullet_client.setGravity(0, 0, -9.8)
 
-		if self._is_wedge:
+		track_wedges = ["block1_11_11", "stairs_wedge_down", "pyramid"]
+		wedge_model_path = "/home/kartik/Tstrut_demo/Stoch2_gym_env/Command_Conditioned_Policies/envs/Wedges/track/"
 
-			wedge_halfheight_offset = 0.01
+		self.wedge_halfheight = 0.2
+		first_wedge = -0.5
+		self.wedgePos = [first_wedge, 0, self.wedge_halfheight]
+		self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, 0])
+		first_wedge_path = wedge_model_path + track_wedges[0] + "/model.urdf"
+		self.wedge[0] = self._pybullet_client.loadURDF(first_wedge_path, self.wedgePos, self.wedgeOrientation)
 
-			self.wedge_halfheight = wedge_halfheight_offset + 1.5 * math.tan(math.radians(self.incline_deg)) / 2.0
-			self.wedgePos = [0, 0, self.wedge_halfheight]
-			self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, self.incline_ori])
+		self.wedgePos = [4 + first_wedge, -0.2, self.wedge_halfheight]
+		self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, 0])
+		second_wedge_path = wedge_model_path + track_wedges[1] + "/model.urdf"
+		self.wedge[1] = self._pybullet_client.loadURDF(second_wedge_path, self.wedgePos, self.wedgeOrientation)
 
-			if not (self.downhill):
-				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/uphill/urdf/wedge_" + str(
-					self.incline_deg) + ".urdf"
+		self.wedgePos = [6.1 + first_wedge, 0.1, self.wedge_halfheight]
+		self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, 0])
+		third_wedge_path = wedge_model_path + track_wedges[2] + "/model.urdf"
+		self.wedge[2] = self._pybullet_client.loadURDF(third_wedge_path, self.wedgePos, self.wedgeOrientation)
 
-				self.INIT_ORIENTATION = self._pybullet_client.getQuaternionFromEuler(
-					[math.radians(self.incline_deg) * math.sin(self.incline_ori),
-					 -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
+		self.wedgePos = [7.55 + first_wedge, -0.2, self.wedge_halfheight]
+		self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, 0])
+		fourth_wedge_path = wedge_model_path + track_wedges[2] + "/model.urdf"
+		self.wedge[3] = self._pybullet_client.loadURDF(fourth_wedge_path, self.wedgePos, self.wedgeOrientation)
 
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(
-					math.radians(self.incline_deg)) * abs(self.wedge_start)
-
-				self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
-
-			else:
-				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(
-					self.incline_deg) + ".urdf"
-
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(
-					math.radians(self.incline_deg)) * 1.5
-
-				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
-
-				self.INIT_ORIENTATION = [0, 0, 0, 1]
-
-			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
-			self.SetWedgeFriction(0.7)
-
+		self.SetWedgeFriction(0.7)
 
 		model_path = 'gym_stoch2_sloped_terrain/envs/robots/stoch_two_abduction_urdf/urdf/stoch_two_abduction_urdf.urdf'
 		self.stoch2 = self._pybullet_client.loadURDF(model_path, self.INIT_POSITION,self.INIT_ORIENTATION)
@@ -255,40 +223,6 @@ class Stoch2Env(gym.Env):
 		self._theta = 0
 		self._last_base_position = [0, 0, 0]
 		self.last_yaw = 0
-		self.inverse = False
-
-		if self._is_wedge:
-			self._pybullet_client.removeBody(self.wedge)
-
-			wedge_halfheight_offset = 0.01
-
-			self.wedge_halfheight = wedge_halfheight_offset + 1.5 * math.tan(math.radians(self.incline_deg)) / 2.0
-			self.wedgePos = [0, 0, self.wedge_halfheight]
-			self.wedgeOrientation = self._pybullet_client.getQuaternionFromEuler([0, 0, self.incline_ori])
-
-			if not (self.downhill):
-				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/uphill/urdf/wedge_" + str(self.incline_deg) + ".urdf"
-
-				self.INIT_ORIENTATION = self._pybullet_client.getQuaternionFromEuler(
-					[math.radians(self.incline_deg) * math.sin(self.incline_ori),
-					 -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
-
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * abs(self.wedge_start)
-
-				self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
-
-			else:
-				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(self.incline_deg) + ".urdf"
-
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * 1.5
-
-				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
-
-				self.INIT_ORIENTATION = [0, 0, 0, 1]
-
-
-			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
-			self.SetWedgeFriction(0.7)
 
 		self._pybullet_client.resetBasePositionAndOrientation(self.stoch2, self.INIT_POSITION, self.INIT_ORIENTATION)
 		self._pybullet_client.resetBaseVelocity(self.stoch2, [0, 0, 0], [0, 0, 0])
@@ -329,57 +263,6 @@ class Stoch2Env(gym.Env):
 	def getlinkmass(self,linkind):
 		m = self._pybullet_client.getDynamicsInfo(self.stoch2,linkind)
 		return m[0]
-	
-
-
-	def Set_Randomization(self, default = False, idx1 = 0, idx2=0,idx3=1,idx0=0,idx11=0,idxc=2, idxp=0, anti_ori=True, deg = 5, ori = 0):
-		if default:
-			frc=[0.55,0.6,0.8]
-			extra_link_mass=[0,0.05,0.1,0.15]
-			cli=[5.2,6,7,8]
-			pertub_range = [0, -60, 60, -100, 100]
-			self.pertub_steps = 150 
-			self.x_f = 0
-			self.y_f = pertub_range[idxp]
-			self.incline_deg = deg + 2*idx1
-			self.incline_ori = ori + PI/6*idx2
-			self.new_fric_val =frc[idx3]
-			self.friction = self.SetFootFriction(self.new_fric_val)
-			self.FrontMass = self.SetLinkMass(0,extra_link_mass[idx0])
-			self.BackMass = self.SetLinkMass(11,extra_link_mass[idx11])
-			self.clips = cli[idxc]
-			self.incline_ori_anti = anti_ori
-
-		else:
-			avail_deg = [5,7,9,11]
-			extra_link_mass=[0,.05,0.1,0.15]
-			pertub_range = [0, -60, 60, -100, 100]
-			cli=[5,6,7,8]
-			self.pertub_steps = 150 #random.randint(90,200) #Keeping fixed for now
-			self.x_f = 0
-			self.y_f = pertub_range[random.randint(0,4)]
-			self.incline_deg = avail_deg[random.randint(0,3)]
-			self.incline_ori = (PI/12)*random.randint(0,6) #resolution of 15 degree
-			self.new_fric_val =np.round(np.clip(np.random.normal(0.6,0.08),0.55,0.8),2)
-			self.friction=self.SetFootFriction(self.new_fric_val)
-			i=random.randint(0,3)
-			self.FrontMass=self.SetLinkMass(0,extra_link_mass[i])
-			i=random.randint(0,3)
-			self.BackMass = self.SetLinkMass(11,extra_link_mass[i])
-			self.clips=np.round(np.clip(np.random.normal(6.5,0.4),5,8),2)
-			self.incline_ori_anti = anti_ori
-
-	def randomize_only_inclines(self, default=False, idx1=0, idx2=0, deg=5, ori=0, anti_ori=True):
-		if default:
-			self.incline_deg = deg + 2 * idx1
-			self.incline_ori = ori + PI / 6 * idx2
-			self.incline_ori_anti = anti_ori
-
-		else:
-			avail_deg = [5, 7, 9, 11]
-			self.incline_deg = avail_deg[random.randint(0, 3)]
-			self.incline_ori = (PI / 12) * random.randint(0, 6)  # resolution of 15 degree
-			self.incline_ori_anti = anti_ori
 
 
 	def boundYshift(self, x, y):
@@ -387,7 +270,6 @@ class Stoch2Env(gym.Env):
 			if y > 1/(0.5619-1)*(x-1):
 				y = 1/(0.5619-1)*(x-1)
 		return y
-
 
 	def getYXshift(self, yx):
 		y = yx[:4]
@@ -414,9 +296,13 @@ class Stoch2Env(gym.Env):
 		action[8:16] = self.getYXshift(action[8:16])
 
 		action[16:20] = action[16:20]*0.035		# ellipse in and out
+
 		action[17] = -action[17]
+
 		action[19] = -action[19]
+
 		return action
+
 	def get_foot_contacts(self):
 
 		foot_ids = [8,3,19,14]
@@ -427,17 +313,10 @@ class Stoch2Env(gym.Env):
 			if len(contact_points_with_ground) > 0:
 				foot_contact_info[leg] = 1
 
-			if self._is_wedge:
-				contact_points_with_wedge = self._pybullet_client.getContactPoints(self.wedge, self.stoch2, -1, foot_ids[leg])
+			for wedge in self.wedge:
+				contact_points_with_wedge = self._pybullet_client.getContactPoints(wedge, self.stoch2, -1, foot_ids[leg])
 				if len(contact_points_with_wedge) > 0:
 					foot_contact_info[leg+4] = 1
-
-			if self._is_stairs:
-				for steps in self.stairs:
-					contact_points_with_stairs = self._pybullet_client.getContactPoints(steps, self.stoch2, -1,
-																					   foot_ids[leg])
-					if len(contact_points_with_stairs) > 0:
-						foot_contact_info[leg + 4] = 1
 
 		return foot_contact_info
 
@@ -566,18 +445,6 @@ class Stoch2Env(gym.Env):
 	
 		desired_height = (robot_height_from_support_plane)/math.cos(wedge_angle) + math.tan(wedge_angle)*((pos[0])*math.cos(self.incline_ori)+ 0.5)
 
-		'''
-		# code to calcuate height of the robot along the support plane normal
-
-		if(pos[0]-self.wedgePos[0]+0.5 > 1.4):
-			real_height_along_normal = self.current_com_height - 1.5*math.tan(wedge_angle)
-		elif(pos[0]-self.wedgePos[0]+0.5 <0):
-			real_height_along_normal = self.current_com_height
-		else:
-			real_height_along_normal = (self.current_com_height - math.tan(wedge_angle)*((pos[0]-self.wedgePos[0])*math.cos(self.incline_ori)+ 0.5))*math.cos(math.radians(self.incline_deg))
-		self.rh_along_normal = real_height_along_normal
-		'''
-
 		roll_reward = np.exp(-45 * ((RPY[0]-self.support_plane_estimated_roll) ** 2))
 		pitch_reward = np.exp(-45 * ((RPY[1]-self.support_plane_estimated_pitch) ** 2))
 		yaw_reward = np.exp(-35 * (RPY[2] ** 2))
@@ -662,8 +529,8 @@ class Stoch2Env(gym.Env):
 		return foot_friction
 
 	def SetWedgeFriction(self, friction):
-		self._pybullet_client.changeDynamics(
-			self.wedge, -1, lateralFriction=friction)
+		for wedge in self.wedge:
+			self._pybullet_client.changeDynamics(wedge, -1, lateralFriction=friction)
 
 	def SetMotorTorqueById(self, motor_id, torque):
 		self._pybullet_client.setJointMotorControl2(

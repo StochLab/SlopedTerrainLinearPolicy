@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<robot name="stairs_wedge_down">
+
+
+    <material name="mustard_yellow">
+        <color rgba="0.8 0.8 0.0 1"/>
+     </material>
+
+  <link name="stairs_wedge_down__link_3">
+    <inertial>
+      <mass value="1000"/>
+      <origin rpy="0     0     1.5708" xyz="0.5 0.5 0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="stairs_wedge_down__collision">
+      <origin rpy="0     0     1.5708" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://stairs_wedge_down/stairs_wedge.stl" scale="0.7 0.7 1"/>
+      </geometry>
+    </collision>
+    <visual name="stairs_wedge_down__visual">
+      <origin rpy="0     0     1.5708" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://stairs_wedge_down/stairs_wedge.stl" scale="0.7 0.7 1"/>
+      </geometry>
+      <material name="mustard_yellow"/>
+    </visual>
+  </link>
+</robot>

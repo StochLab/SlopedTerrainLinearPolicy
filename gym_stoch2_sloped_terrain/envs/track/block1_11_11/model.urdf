@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<robot name="block1_11_11">
+    <material name="mustard_yellow">
+        <color rgba="0.8 0.8 0.0 1"/>
+           </material>
+  <link name="block1_11_11__link_0">
+    <inertial>
+      <mass value="100"/>
+      <origin rpy="0      0      3.14" xyz="0 0 0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="block1_11_11__collision">
+      <origin rpy="0      0      3.14" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://block1_11_11/block1_11_11.stl" scale="0.7 0.7 0.7"/>
+      </geometry>
+    </collision>
+    <visual name="block1_11_11__visual">
+      <origin rpy="0      0      3.14" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://block1_11_11/block1_11_11.stl" scale="0.7 0.7 0.7"/>
+      </geometry>
+        <material name="mustard_yellow"/>
+    </visual>
+  </link>
+</robot>

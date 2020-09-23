@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<robot name="block3_9_11">
+  <link name="block3_9_11__link_1">
+    <inertial>
+      <mass value="1"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+    </inertial>
+    <collision name="block3_9_11__collision">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://block3_9_11/block3_9_11.stl" scale="1 1 1"/>
+      </geometry>
+    </collision>
+    <visual name="block3_9_11__visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://block3_9_11/block3_9_11.stl" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>
