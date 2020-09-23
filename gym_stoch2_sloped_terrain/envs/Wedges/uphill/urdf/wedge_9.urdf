@@ -22,7 +22,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="-1.5 0 0"
+        xyz="2.5 0 0"
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh
@@ -38,7 +38,7 @@
     </visual>
     <collision>
       <origin
-        xyz="-1.5 0 0"
+        xyz="2.5 0 0"
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh
