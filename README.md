@@ -41,6 +41,7 @@ The above command starts the training in the default and the best by far hyperpa
 | --episode_length|Horizon of a episode|int |
 | --domain_Rand|randomizatize the dynamics of the environment while training|int(ony 0 or 1)|
 | --episode_length|Horizon of a episode|int |
+| --domain_rand|set domain randomization|int |
 
 For example,
 
@@ -63,6 +64,7 @@ the following test parameters can be changed while testing the policy,
 | Parameter     |About        |  type | Allowed values|unit|
 |:-------------:|:-------------:|:-----:|:---------:|:-----:|
 |--PolicyDir | directory of the policy to be tested | str |(check the experiments folder)| - |
+|--Stairs | load staircase | bool |True or False|unitless|
 |--WedgeIncline | the elevation angle of wedge | int |0,5,7,9,11,13|Degrees(°)|
 |--WedgeOrientation| the yaw angle of wedge about world z axis | float | -90.0 to 90.0 |Degrees(°)|
 |--EpisodeLength |number of gait steps of a episode| int |0 to inf|number of steps|
@@ -85,10 +87,22 @@ Thus, for a
 
         python test_policy.py --PolicyDir 23July3 --RandomTest True --seed 100
 
+## To conduct tests on a staircase
+To run a policy on a staircase of fixed dimensions, the following command is to be used.
+
+        python test_policy.py --Stairs True
+        
+## To conduct tests on a arbitary slopes
+To run a policy on a arbitary slope track, the following command is to be used.
+
+        python arbitary_slope_test.py
+
 **Note:** 
 
 1. The test policies are by default loaded from the path *experiments/**given_logdir_name**/iterations/best_policy.npy"*, if not specified it loads the best ever policy pre-trained by us.
 2. For loading the policies from other directories, you might have to change the path from within the *test_policy.py* file.
+3. In our method we only train for +ve roll and -ve pitch conditions of support plane, the trained policy is able to generalize for other conditions too.
+4. Our env is not fully supported for training in downhill case, but you can evalute policy in downhill conditions.
 
 
 
