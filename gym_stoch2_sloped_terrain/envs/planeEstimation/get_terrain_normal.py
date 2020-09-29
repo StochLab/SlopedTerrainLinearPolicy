@@ -29,7 +29,7 @@ def legFrame_to_BodyFrame(leg_id, hip_angle, knee_angle, abd_angle):
         knee_angle: Angle of the knee joint in radians
         abd_angle : Angle of the abduction joint in radians
         leg_id    : One of the following strings: "FL", "FR", "BL", "BR"
-    Ret:
+    Returns:
         valid    : A flag to indicate if the results are valid or not
         [x, y, z]: Position co-ordinates of the foot in the body frame.
 
@@ -97,7 +97,7 @@ def planeNormal(pt_a, pt_b, pt_c):
         pt_a : 3D point vector
         pt_b : 3D point vector
         pt_c : 3D point vector
-    Ret:
+    Returns:
         vec_n : 3D unit vector normal to the plane containing pt_a, pt_b, and pt_c
     '''
     vec_ab = np.array(pt_b) - np.array(pt_a)
@@ -114,7 +114,7 @@ def planeNormalFourPoint(pt_a, pt_b, pt_c, pt_d):
         pt_a : 3D point vector
         pt_b : 3D point vector
         pt_c : 3D point vector
-    Ret:
+    Returns:
         vec_n : 3D unit vector normal to the plane containing pt_a, pt_b, and pt_c
     '''
     vec_ab = np.array(pt_b) - np.array(pt_a)
@@ -132,7 +132,7 @@ def transformation(rot, x):
     Args:
         rot : Rotation matrix
         x   : Three dimensional vector expressed in the original frame
-    Ret:
+    Returns:
         x_new : Three dimensional vector in the new frame of reference
     '''
     mat   = np.array(rot)
@@ -141,6 +141,20 @@ def transformation(rot, x):
     return x_out
 
 def four_point_contact_check(legs, contact_info, rot_mat):
+    '''
+    calculates the individual vectors connecting the feet that are in contact
+    by calling the forward kinematics functions. 
+    Args:
+        legs          : An object holding the leg information and leg label of all four legs.
+        contact_info  : A list containing the contact information of each individual foot 
+                        with the ground and a special structure (Wedge or Staircase or Track).
+                        The convention being, 1 - in contact and 0 - not in contact.
+        rot_mat       : The rotation matrix of the base of the robot.
+    Returns:
+        plane_normal                     : a np array of the caclucated plane normal
+        euler_angles_of_support_plane[0] : the estimated roll of the support plane 
+        euler_angles_of_support_plane[1] : the estimated pitch of the support plane
+    '''
     bool = False
     MOTOROFFSETS = [2.3562, 1.2217]
     leg_contact_info = np.zeros(4)
@@ -179,7 +193,22 @@ def four_point_contact_check(legs, contact_info, rot_mat):
 
 
 def vector_method(prev_normal_vec, contact_info, motor_angles, rot_mat):
-    # [FLH, FLK, FRH, FRK, BLH, BLK, BRH, BRK, FLA, FRA, BLA, BRA]
+    '''
+    calculates the normal of the support plane, as the vector product of the 
+    vectors joining foots that are in contact in sucessive gait steps. 
+    Args:
+        prev_normal_v : The normal vector that was calculated in the previous iteration.
+        contact_info  :  A list containing the contact information of each individual foot 
+                        with the ground and a special structure (Wedge or Staircase or Track).
+                        The convention being, 1 - in contact and 0 - not in contact.
+        motor_angles  : The motor angles in the order [FLH, FLK, FRH, FRK, BLH, BLK, 
+                        BRH, BRK, FLA, FRA, BLA, BRA]
+        rot_mat       : The rotation matrix of the base of the robot.
+    Returns:
+        plane_normal                     : a np array of the caclucated plane normal
+        euler_angles_of_support_plane[0] : the estimated roll of the support plane 
+        euler_angles_of_support_plane[1] : the estimated pitch of the support plane
+    '''
 
     FR = leg_joint_info("FR", motor_angles[2], motor_angles[3], motor_angles[9])
     FL = leg_joint_info("FL", motor_angles[0], motor_angles[1], motor_angles[8])
@@ -190,9 +219,6 @@ def vector_method(prev_normal_vec, contact_info, motor_angles, rot_mat):
     legs = Legs(front_right=FR, front_left=FL, back_right=BR,
                 back_left=BL)
     bool, foot_contacts_vec1, foot_contacts_vec2 = four_point_contact_check(legs, contact_info, rot_mat)
-
-
-
 
     if bool:
         normal_vec = planeNormalFourPoint(foot_contacts_vec1[0], foot_contacts_vec1[1], foot_contacts_vec2[0], foot_contacts_vec2[1])
@@ -212,23 +238,30 @@ def vector_method(prev_normal_vec, contact_info, motor_angles, rot_mat):
     return np.array(plane_normal),euler_angles_of_support_plane[0],euler_angles_of_support_plane[1]
 
 
-
-
-# Checks if a matrix is a valid rotation matrix.
 def isRotationMatrix(R) :
+    '''
+    checks whether the given matrix satisfies the conditions of a rotation matrix
+    Args:
+        R : Rotation matrix to be converted
+    Returns:
+        A boolean value, verifying whether the given matrix is a rotation matix
+    '''
     Rt = np.transpose(R)
     shouldBeIdentity = np.dot(Rt, R)
     I = np.identity(3, dtype = R.dtype)
     n = np.linalg.norm(I - shouldBeIdentity)
     return n < 1e-6
 
-# Calculates rotation matrix to euler angles
-# The result is the same as MATLAB except the order
-# of the euler angles ( x and z are swapped ).
-def rotationMatrixToEulerAngles(R) :
 
-    #assert(isRotationMatrix(R))
+def rotationMatrixToEulerAngles(R) :
+    '''
+    Coverts rotation matrix to euler angles
+    Args:
+        R : Rotation matrix to be converted
+    Returns:
+        [x,y,z] : The list of euler angles in the order roll(x), pitch(y) and yaw(z)
     
+    '''    
     sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0])
     
     singular = sy < 1e-6
