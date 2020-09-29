@@ -240,11 +240,11 @@ def vector_method(prev_normal_vec, contact_info, motor_angles, rot_mat):
 
 def isRotationMatrix(R) :
     '''
-    checks the conditions of a rotation matrix
+    checks whether the given matrix satisfies the conditions of a rotation matrix
     Args:
         R : Rotation matrix to be converted
     Returns:
-        A boolean value, verifying whether a the given matrix is a rotation matix
+        A boolean value, verifying whether the given matrix is a rotation matix
     '''
     Rt = np.transpose(R)
     shouldBeIdentity = np.dot(Rt, R)
