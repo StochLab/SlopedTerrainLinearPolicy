@@ -362,7 +362,7 @@ class Stoch2Env(gym.Env):
 		Args:
 			link_idx : link index of the robot
 		Ret:
-			m[0] 	 :	mass of the link
+			m[0] : mass of the link
 		'''
 		m = self._pybullet_client.getDynamicsInfo(self.stoch2,link_idx)
 		return m[0]
@@ -370,8 +370,8 @@ class Stoch2Env(gym.Env):
 
 	def Set_Randomization(self, default = False, idx1 = 0, idx2=0, idx3=1, idx0=0, idx11=0, idxc=2, idxp=0, deg = 5, ori = 0):
 		'''
-		This function helps in randomizing physical and dynamics parameters of the environment during the training to robustify the policy.
-		This parameters include wedge incline, wedge orientation, friction, mass of links, motor strength and external perturbation force.
+		This function helps in randomizing the physical and dynamics parameters of the environment to robustify the policy.
+		These parameters include wedge incline, wedge orientation, friction, mass of links, motor strength and external perturbation force.
 		Note : If default is True, this function set above mentioned parameters in user defined manner
 		'''
 		if default:
@@ -424,7 +424,7 @@ class Stoch2Env(gym.Env):
 
 	def boundYshift(self, x, y):
 		'''
-		function which bounds Y shift with respect to current X shift
+		This function bounds Y shift with respect to current X shift
 		Args:
 			 x : absolute X-shift
 			 y : Y-Shift
@@ -439,7 +439,7 @@ class Stoch2Env(gym.Env):
 
 	def getYXshift(self, yx):
 		'''
-		function which bounds X and Y shifts in a trapezoidal workspace
+		This function bounds X and Y shifts in a trapezoidal workspace
 		'''
 		y = yx[:4]
 		x = yx[4:]
@@ -452,7 +452,7 @@ class Stoch2Env(gym.Env):
 
 	def transform_action(self, action):
 		'''
-		function which convert normalized actions to scaled offsets
+		Transform normalized actions to scaled offsets
 		Args:
 			action : 20 dimensional 1D array of predicted action values from policy in following order :
 					 [(step lengths of FR, FL, BR, BL), (steer angles of FR, FL, BR, BL),
@@ -462,7 +462,7 @@ class Stoch2Env(gym.Env):
 			action : scaled action parameters
 
 		Note : The convention of Cartesian axes for leg frame in the codebase follow this order, Y points up, X forward and Z right.
-			   While in research paper in follows this order, Z points up, X forward and Y right.
+			   While in research paper we follow this order, Z points up, X forward and Y right.
 		'''
 
 		action = np.clip(action, -1, 1)
@@ -484,10 +484,10 @@ class Stoch2Env(gym.Env):
 
 	def get_foot_contacts(self):
 		'''
-		function which retrieve foot contacts information with supporting ground or wedge for each leg
+		Retrieve foot contact information with the supporting ground or any special structure (wedge, stairs)
 		Ret:
 			foot_contact_info : array of ones and zeros denoting foot contact information, first four values for
-								contact with plane and next four for contact with wedge in this order [FR, FL, BR, BL]
+								contact with plane and next four for contact with wedge/stairs in this order [FR, FL, BR, BL]
 		'''
 		foot_ids = [8,3,19,14]
 		foot_contact_info = np.zeros(8)
@@ -533,7 +533,7 @@ class Stoch2Env(gym.Env):
 
 	def CurrentVelocities(self):
 		'''
-		function to retrieve the base linear and angular velocities
+		Returns robot's linear and angular velocities
 		Ret:
 			radial_v  : linear velocity
 			current_w : angular velocity
@@ -546,7 +546,7 @@ class Stoch2Env(gym.Env):
 
 	def do_simulation(self, action, n_frames):
 		'''
-		function which convert action parameters to corresponding motor commands with the help of a elliptical trajectory controller
+		Converts action parameters to corresponding motor commands with the help of a elliptical trajectory controller
 		'''
 		omega = 2 * no_of_points * self._frequency  
 		self.action = action
@@ -612,7 +612,7 @@ class Stoch2Env(gym.Env):
 
 	def _termination(self, pos, orientation):
 		'''
-		function to check termination conditions of the environment
+		Check termination conditions of the environment
 		Args:
 			pos 		: current position of the robot's base in world frame
 			orientation : current orientation of robot's base (Quaternions) in world frame
@@ -641,7 +641,7 @@ class Stoch2Env(gym.Env):
 
 	def _get_reward(self):
 		'''
-		function to calculate reward for roll pitch yaw stability, normal height of the robot and forward distance moved on slope:
+		Calculate reward recieved for roll pitch yaw stability, normal height of the robot and forward distance moved on the slope:
 		Ret:
 			reward : reward achieved
 			done : if env terminates
@@ -692,7 +692,7 @@ class Stoch2Env(gym.Env):
 
 	def _apply_pd_control(self, motor_commands, motor_vel_commands):
 		'''
-		function which calculates motor torque for desired motor position commands and apply them
+		Apply PD control to reach desired motor position commands
 		Ret:
 			applied_motor_torque : array of applied motor torque values in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA]
 		'''
@@ -709,7 +709,7 @@ class Stoch2Env(gym.Env):
 
 	def add_noise(self, sensor_value, SD = 0.04):
 		'''
-		function which adds sensor noise of user defined standard deviation in current sensor_value
+		Adds sensor noise of user defined standard deviation in current sensor_value
 		'''
 		noise = np.random.normal(0, SD, 1)
 		sensor_value = sensor_value + noise[0]
