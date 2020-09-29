@@ -40,13 +40,11 @@ class Stoch2Env(gym.Env):
 				 gait = 'trot',
 				 phase =   [0, no_of_points, no_of_points,0],#[FR, FL, BR, BL] 
 				 action_dim = 20,
-				 collect_data = False,
 				 end_steps = 1000,
 				 stairs = False,
 				 downhill =False,
 				 seed_value = 100,
 				 wedge = True,
-				 anti_clock_ori = True,
 				 IMU_Noise = False,
 				 deg = 5):
 
@@ -55,8 +53,10 @@ class Stoch2Env(gym.Env):
 		self._is_render = render
 		self._on_rack = on_rack
 		self.rh_along_normal = 0.24
+
 		self.seed_value = seed_value
 		random.seed(self.seed_value)
+
 		if self._is_render:
 			self._pybullet_client = bullet_client.BulletClient(connection_mode=pybullet.GUI)
 		else:
@@ -64,11 +64,8 @@ class Stoch2Env(gym.Env):
 
 		self._theta = 0
 
-		self._update_action_every = 1/50 
-		self._frequency = 2.5 
-		self.frequency_weight = 1
+		self._frequency = 2.5
 		self.termination_steps = end_steps
-		self.incline_ori_anti = anti_clock_ori
 		self.downhill = downhill
 
 		#PD gains
@@ -94,7 +91,6 @@ class Stoch2Env(gym.Env):
 		self.wedge_start = 0.5 
 		self.wedge_halflength = 2
 
-		self.collect_data = collect_data
 		if gait is 'trot':
 			phase = [0, no_of_points, no_of_points, 0]
 		elif gait is 'walk':
@@ -155,7 +151,9 @@ class Stoch2Env(gym.Env):
 		self.action_space = spaces.Box(-action_high, action_high)
 		
 		self.hard_reset()
+
 		self.Set_Randomization(default=True, idx1=2, idx2=2)
+
 		if(self._is_stairs):
 			boxHalfLength = 0.1
 			boxHalfWidth = 1
@@ -171,6 +169,11 @@ class Stoch2Env(gym.Env):
 
 
 	def hard_reset(self):
+		'''
+		Function to
+		1) Set simulation parameters which remains constant throughout the experiments
+		2) load urdf of plane, wedge and robot in initial conditions
+		'''
 		self._pybullet_client.resetSimulation()
 		self._pybullet_client.setPhysicsEngineParameter(numSolverIterations=int(300))
 		self._pybullet_client.setTimeStep(self.dt/self._frame_skip)
@@ -212,6 +215,7 @@ class Stoch2Env(gym.Env):
 				self.INIT_ORIENTATION = [0, 0, 0, 1]
 
 			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
+
 			self.SetWedgeFriction(0.7)
 
 
@@ -224,6 +228,7 @@ class Stoch2Env(gym.Env):
 		for i in range(num_legs):
 			self.ResetLeg(i, add_constraint=True)
 		self.ResetPoseForAbd()
+
 		if self._on_rack:
 			self._pybullet_client.createConstraint(
 				self.stoch2, -1, -1, -1, self._pybullet_client.JOINT_FIXED,
@@ -252,6 +257,10 @@ class Stoch2Env(gym.Env):
 
 
 	def reset(self):
+		'''
+		This function resets the current environment accordingly to the physical and dynamics properties set by Set_Randomization()
+		Note : Set_Randomization() is called before reset() to either randomize or set environment in default conditions.
+		'''
 		self._theta = 0
 		self._last_base_position = [0, 0, 0]
 		self.last_yaw = 0
@@ -300,6 +309,15 @@ class Stoch2Env(gym.Env):
 
 
 	def apply_Ext_Force(self, x_f, y_f,link_index= 1,visulaize = False,life_time=0.01):
+		'''
+		function to apply external force on the robot
+		Args:
+			x_f  :  external force in x direction
+			y_f  : 	external force in y direction
+			link_index : link index of the robot where the force need to be applied
+			visulaize  :  bool, whether to visulaize external force by arrow symbols
+			life_time  :  life time of the visualization
+ 		'''
 		force_applied = [x_f,y_f,0]
 		self._pybullet_client.applyExternalForce(self.stoch2, link_index, forceObj=[x_f,y_f,0],posObj=[0,0,0],flags=self._pybullet_client.LINK_FRAME)
 		f_mag = np.linalg.norm(np.array(force_applied))
@@ -315,24 +333,47 @@ class Stoch2Env(gym.Env):
 			self._pybullet_client.addUserDebugLine(point_of_force,dummy_pt,[0,0,1],3,lifeTime=life_time)
 
 
-	def SetLinkMass(self,link_ind,mass=0):
+	def SetLinkMass(self,link_idx,mass=0):
+		'''
+		Function to add extra mass to front and back link of the robot
 
-		if(link_ind==0):
-			mass=mass+1.1
-			self._pybullet_client.changeDynamics(self.stoch2, 0, mass=mass)
-		elif(link_ind==11):
-			mass=mass+1.1
-			self._pybullet_client.changeDynamics(self.stoch2, 11, mass=mass)
-		return mass
+		Args:
+			link_idx : link index of the robot whose weight to need be modified
+			mass     : value of extra mass to be added
+
+		Ret:
+			new_mass 	 : mass of the link after addition
+		Note : Currently this function supports addition of masses in front and back link only (0, 11)
+		'''
+		link_mass = self._pybullet_client.getDynamicsInfo(self.stoch2,link_idx)[0]
+		if(link_idx==0):
+			link_mass = mass+1.1
+			self._pybullet_client.changeDynamics(self.stoch2, 0, mass=link_mass)
+		elif(link_idx==11):
+			link_mass = mass+1.1
+			self._pybullet_client.changeDynamics(self.stoch2, 11, mass=link_mass)
+
+		return link_mass
 		
 
-	def getlinkmass(self,linkind):
-		m = self._pybullet_client.getDynamicsInfo(self.stoch2,linkind)
+	def getlinkmass(self,link_idx):
+		'''
+		function to retrieve mass of any link
+		Args:
+			link_idx : link index of the robot
+		Ret:
+			m[0] 	 :	mass of the link
+		'''
+		m = self._pybullet_client.getDynamicsInfo(self.stoch2,link_idx)
 		return m[0]
 	
 
-
-	def Set_Randomization(self, default = False, idx1 = 0, idx2=0,idx3=1,idx0=0,idx11=0,idxc=2, idxp=0, anti_ori=True, deg = 5, ori = 0):
+	def Set_Randomization(self, default = False, idx1 = 0, idx2=0, idx3=1, idx0=0, idx11=0, idxc=2, idxp=0, deg = 5, ori = 0):
+		'''
+		This function helps in randomizing physical and dynamics parameters of the environment during the training to robustify the policy.
+		This parameters include wedge incline, wedge orientation, friction, mass of links, motor strength and external perturbation force.
+		Note : If default is True, this function set above mentioned parameters in user defined manner
+		'''
 		if default:
 			frc=[0.55,0.6,0.8]
 			extra_link_mass=[0,0.05,0.1,0.15]
@@ -348,7 +389,6 @@ class Stoch2Env(gym.Env):
 			self.FrontMass = self.SetLinkMass(0,extra_link_mass[idx0])
 			self.BackMass = self.SetLinkMass(11,extra_link_mass[idx11])
 			self.clips = cli[idxc]
-			self.incline_ori_anti = anti_ori
 
 		else:
 			avail_deg = [5,7,9,11]
@@ -360,29 +400,37 @@ class Stoch2Env(gym.Env):
 			self.y_f = pertub_range[random.randint(0,4)]
 			self.incline_deg = avail_deg[random.randint(0,3)]
 			self.incline_ori = (PI/12)*random.randint(0,6) #resolution of 15 degree
-			self.new_fric_val =np.round(np.clip(np.random.normal(0.6,0.08),0.55,0.8),2)
-			self.friction=self.SetFootFriction(self.new_fric_val)
+			self.new_fric_val = np.round(np.clip(np.random.normal(0.6,0.08),0.55,0.8),2)
+			self.friction = self.SetFootFriction(self.new_fric_val)
 			i=random.randint(0,3)
-			self.FrontMass=self.SetLinkMass(0,extra_link_mass[i])
+			self.FrontMass = self.SetLinkMass(0,extra_link_mass[i])
 			i=random.randint(0,3)
 			self.BackMass = self.SetLinkMass(11,extra_link_mass[i])
-			self.clips=np.round(np.clip(np.random.normal(6.5,0.4),5,8),2)
-			self.incline_ori_anti = anti_ori
+			self.clips = np.round(np.clip(np.random.normal(6.5,0.4),5,8),2)
 
-	def randomize_only_inclines(self, default=False, idx1=0, idx2=0, deg=5, ori=0, anti_ori=True):
+	def randomize_only_inclines(self, default=False, idx1=0, idx2=0, deg=5, ori=0):
+		'''
+		This function only randomizes the wedge incline and orientation and is called during training without Domain Randomization
+		'''
 		if default:
 			self.incline_deg = deg + 2 * idx1
 			self.incline_ori = ori + PI / 6 * idx2
-			self.incline_ori_anti = anti_ori
 
 		else:
 			avail_deg = [5, 7, 9, 11]
 			self.incline_deg = avail_deg[random.randint(0, 3)]
 			self.incline_ori = (PI / 12) * random.randint(0, 6)  # resolution of 15 degree
-			self.incline_ori_anti = anti_ori
 
 
 	def boundYshift(self, x, y):
+		'''
+		function which bounds Y shift with respect to current X shift
+		Args:
+			 x : absolute X-shift
+			 y : Y-Shift
+		Ret :
+			  y : bounded Y-shift
+		'''
 		if x > 0.5619:
 			if y > 1/(0.5619-1)*(x-1):
 				y = 1/(0.5619-1)*(x-1)
@@ -390,6 +438,9 @@ class Stoch2Env(gym.Env):
 
 
 	def getYXshift(self, yx):
+		'''
+		function which bounds X and Y shifts in a trapezoidal workspace
+		'''
 		y = yx[:4]
 		x = yx[4:]
 		for i in range(0,4):
@@ -400,25 +451,44 @@ class Stoch2Env(gym.Env):
 		return yx
 
 	def transform_action(self, action):
+		'''
+		function which convert normalized actions to scaled offsets
+		Args:
+			action : 20 dimensional 1D array of predicted action values from policy in following order :
+					 [(step lengths of FR, FL, BR, BL), (steer angles of FR, FL, BR, BL),
+					  (Y-shifts of FR, FL, BR, BL), (X-shifts of FR, FL, BR, BL),
+					  (Z-shifts of FR, FL, BR, BL)]
+		Ret :
+			action : scaled action parameters
+
+		Note : The convention of Cartesian axes for leg frame in the codebase follow this order, Y points up, X forward and Z right.
+			   While in research paper in follows this order, Z points up, X forward and Y right.
+		'''
 
 		action = np.clip(action, -1, 1)
 
-		action[:4] = (action[:4] + 1)/2			# Step lengths are positive always
+		action[:4] = (action[:4] + 1)/2					# Step lengths are positive always
 
-		action[:4] = action[:4] *2 * 0.068  	# Max steplength = 2x0.068
+		action[:4] = action[:4] *2 * 0.068  			# Max step length = 2x0.068
 
-		action[4:8] = action[4:8] * PI/2		#PHI can be [-pi/2, pi/2]
+		action[4:8] = action[4:8] * PI/2				#PHI can be [-pi/2, pi/2]
 
-		action[8:12] = (action[8:12]+1)/2		# el1ipse center y is positive always
+		action[8:12] = (action[8:12]+1)/2				# Y-shifts are positive always
 
 		action[8:16] = self.getYXshift(action[8:16])
 
-		action[16:20] = action[16:20]*0.035		# ellipse in and out
+		action[16:20] = action[16:20]*0.035				# Max allowed Z-shift due to abduction limits is 3.5cm
 		action[17] = -action[17]
 		action[19] = -action[19]
 		return action
-	def get_foot_contacts(self):
 
+	def get_foot_contacts(self):
+		'''
+		function which retrieve foot contacts information with supporting ground or wedge for each leg
+		Ret:
+			foot_contact_info : array of ones and zeros denoting foot contact information, first four values for
+								contact with plane and next four for contact with wedge in this order [FR, FL, BR, BL]
+		'''
 		foot_ids = [8,3,19,14]
 		foot_contact_info = np.zeros(8)
 
@@ -442,23 +512,42 @@ class Stoch2Env(gym.Env):
 		return foot_contact_info
 
 
-	def step(self, action, callback=None):
+	def step(self, action):
+		'''
+		function to perform simulation step
+		Args:
+			action : array of action values
+		Ret:
+			ob 	   : observation after taking step
+			reward : reward received after taking step
+			done   : whether the step terminates the env
+			{}	   : any information of the env (will be added later)
+		'''
 		action = self.transform_action(action)
 		
-		self.do_simulation(action, n_frames = self._frame_skip, callback=callback)
+		self.do_simulation(action, n_frames = self._frame_skip)
 
 		ob = self.GetObservation()
-		reward = self._get_reward()
-		return ob, reward, False,{}
+		reward, done = self._get_reward()
+		return ob, reward, done,{}
 
 	def CurrentVelocities(self):
+		'''
+		function to retrieve the base linear and angular velocities
+		Ret:
+			radial_v  : linear velocity
+			current_w : angular velocity
+		'''
 		current_w = self.GetBaseAngularVelocity()[2]
 		current_v = self.GetBaseLinearVelocity()
 		radial_v = math.sqrt(current_v[0]**2 + current_v[1]**2)
 		return radial_v, current_w
 
 
-	def do_simulation(self, action, n_frames, callback=None):
+	def do_simulation(self, action, n_frames):
+		'''
+		function which convert action parameters to corresponding motor commands with the help of a elliptical trajectory controller
+		'''
 		omega = 2 * no_of_points * self._frequency  
 		self.action = action
 		ii = 0
@@ -521,38 +610,42 @@ class Stoch2Env(gym.Env):
 		rgb_array = rgb_array[:, :, :3]
 		return rgb_array
 
-	def _termination(self, pos, orientation, RPY):
+	def _termination(self, pos, orientation):
+		'''
+		function to check termination conditions of the environment
+		Args:
+			pos 		: current position of the robot's base in world frame
+			orientation : current orientation of robot's base (Quaternions) in world frame
+		Ret:
+			done 		: return true if termination conditions satisfied
+		'''
 		done = False
-		penalty = 0
-		rot_mat = self._pybullet_client.getMatrixFromQuaternion(orientation)
-		local_up = rot_mat[6:]
+		RPY = self._pybullet_client.getEulerFromQuaternion(orientation)
 
 		if self._n_steps >= self.termination_steps:
 			done = True
-			penalty = 0
 		else:
 			if abs(RPY[0]) > math.radians(30):
 				print('Oops, Robot about to fall sideways! Terminated')
 				done = True
-				penalty = penalty + 0.1
 
 			if abs(RPY[1])>math.radians(35):
 				print('Oops, Robot doing wheely! Terminated')
 				done = True
-				penalty = penalty + 0.1
 
 			if pos[2] > 0.7:
 				print('Robot was too high! Terminated')
 				done = True
-				penalty = penalty + 0.6
 
-		if done and self._n_steps <= 2:
-			penalty = 3
-
-		return done, penalty
+		return done
 
 	def _get_reward(self):
-
+		'''
+		function to calculate reward for roll pitch yaw stability, normal height of the robot and forward distance moved on slope:
+		Ret:
+			reward : reward achieved
+			done : if env terminates
+		'''
 		wedge_angle = self.incline_deg*PI/180
 		robot_height_from_support_plane = 0.243	
 		pos, ori = self.GetBasePosAndOrientation()
@@ -562,21 +655,11 @@ class Stoch2Env(gym.Env):
 
 		current_height = round(pos[2], 5)
 		self.current_com_height = current_height
-		standing_penalty=0
+		standing_penalty=3
 	
 		desired_height = (robot_height_from_support_plane)/math.cos(wedge_angle) + math.tan(wedge_angle)*((pos[0])*math.cos(self.incline_ori)+ 0.5)
 
-		'''
-		# code to calcuate height of the robot along the support plane normal
 
-		if(pos[0]-self.wedgePos[0]+0.5 > 1.4):
-			real_height_along_normal = self.current_com_height - 1.5*math.tan(wedge_angle)
-		elif(pos[0]-self.wedgePos[0]+0.5 <0):
-			real_height_along_normal = self.current_com_height
-		else:
-			real_height_along_normal = (self.current_com_height - math.tan(wedge_angle)*((pos[0]-self.wedgePos[0])*math.cos(self.incline_ori)+ 0.5))*math.cos(math.radians(self.incline_deg))
-		self.rh_along_normal = real_height_along_normal
-		'''
 
 		roll_reward = np.exp(-45 * ((RPY[0]-self.support_plane_estimated_roll) ** 2))
 		pitch_reward = np.exp(-45 * ((RPY[1]-self.support_plane_estimated_pitch) ** 2))
@@ -589,21 +672,30 @@ class Stoch2Env(gym.Env):
 
 		step_distance_x = (x - x_l)
 
-		done, penalty = self._termination(pos, ori, RPY_orig)
+		done = self._termination(pos, ori)
 		if done:
 			reward = 0
 		else:
 			reward = round(yaw_reward, 4) + round(pitch_reward, 4) + round(roll_reward, 4)\
 					 + round(height_reward,4) + 100 * round(step_distance_x, 4)
 
-			# self.step_disp.append(step_distance_x)
-			# if(self._n_steps>150):
-			# 	if(sum(self.step_disp)<0.035):
-			# 		reward = reward-3
+			'''
+			#Penalize for standing at same position for continuous 150 steps
+			self.step_disp.append(step_distance_x)
+		
+			if(self._n_steps>150):
+				if(sum(self.step_disp)<0.035):
+					reward = reward-standing_penalty
+			'''
 
-		return reward
+		return reward, done
 
 	def _apply_pd_control(self, motor_commands, motor_vel_commands):
+		'''
+		function which calculates motor torque for desired motor position commands and apply them
+		Ret:
+			applied_motor_torque : array of applied motor torque values in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA]
+		'''
 		qpos_act = self.GetMotorAngles()
 		qvel_act = self.GetMotorVelocities()
 		applied_motor_torque = self._kp * (motor_commands - qpos_act) + self._kd * (motor_vel_commands - qvel_act)
@@ -615,12 +707,20 @@ class Stoch2Env(gym.Env):
 			self.SetMotorTorqueById(motor_id, motor_torque)
 		return applied_motor_torque
 
-	def add_noise(self, sensor_value):
-		noise = np.random.normal(0, 0.04, 1)
+	def add_noise(self, sensor_value, SD = 0.04):
+		'''
+		function which adds sensor noise of user defined standard deviation in current sensor_value
+		'''
+		noise = np.random.normal(0, SD, 1)
 		sensor_value = sensor_value + noise[0]
 		return sensor_value
 
 	def GetObservation(self):
+		'''
+		This function returns the current observation of the environment for the interested task
+		Ret:
+			obs : [R(t-2), P(t-2), Y(t-2), R(t-1), P(t-1), Y(t-1), R(t), P(t), Y(t), estimated support plane (roll, pitch) ]
+		'''
 		pos, ori = self.GetBasePosAndOrientation()
 		RPY = self._pybullet_client.getEulerFromQuaternion(ori)
 		RPY = np.round(RPY, 5)
@@ -635,26 +735,50 @@ class Stoch2Env(gym.Env):
 		return obs
 
 	def GetMotorAngles(self):
+		'''
+		This function returns the current joint angles in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA ]
+		'''
 		motor_ang = [self._pybullet_client.getJointState(self.stoch2, motor_id)[0] for motor_id in self._motor_id_list]
 		return motor_ang
 
 	def GetMotorVelocities(self):
+		'''
+		This function returns the current joint velocities in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA ]
+		'''
 		motor_vel = [self._pybullet_client.getJointState(self.stoch2, motor_id)[1] for motor_id in self._motor_id_list]
 		return motor_vel
 
 	def GetBasePosAndOrientation(self):
+		'''
+		This function returns the robot torso position(X,Y,Z) and orientation(Quaternions) in world frame
+		'''
 		position, orientation = (self._pybullet_client.getBasePositionAndOrientation(self.stoch2))
 		return position, orientation
 
 	def GetBaseAngularVelocity(self):
+		'''
+		This function returns the robot base angular velocity in world frame
+		Ret: list of 3 floats
+		'''
 		basevelocity= self._pybullet_client.getBaseVelocity(self.stoch2)
-		return basevelocity[1] #world AngularVelocity vec3, list of 3 floats
+		return basevelocity[1]
 
 	def GetBaseLinearVelocity(self):
+		'''
+		This function returns the robot base linear velocity in world frame
+		Ret: list of 3 floats
+		'''
 		basevelocity= self._pybullet_client.getBaseVelocity(self.stoch2)
-		return basevelocity[0] #world linear Velocity vec3, list of 3 floats
+		return basevelocity[0]
 
 	def SetFootFriction(self, foot_friction):
+		'''
+		This function modify coefficient of friction of the robot feet
+		Args :
+		foot_friction :  desired friction coefficient of feet
+		Ret  :
+		foot_friction :  current coefficient of friction
+		'''
 		FOOT_LINK_ID = [3,8,14,19]
 		for link_id in FOOT_LINK_ID:
 			self._pybullet_client.changeDynamics(
@@ -662,23 +786,36 @@ class Stoch2Env(gym.Env):
 		return foot_friction
 
 	def SetWedgeFriction(self, friction):
+		'''
+		This function modify friction coefficient of the wedge
+		Args :
+		foot_friction :  desired friction coefficient of the wedge
+		'''
 		self._pybullet_client.changeDynamics(
 			self.wedge, -1, lateralFriction=friction)
 
 	def SetMotorTorqueById(self, motor_id, torque):
+		'''
+		function to set motor torque for respective motor_id
+		'''
 		self._pybullet_client.setJointMotorControl2(
 				  bodyIndex=self.stoch2,
 				  jointIndex=motor_id,
 				  controlMode=self._pybullet_client.TORQUE_CONTROL,
 				  force=torque)
 	def BuildMotorIdList(self):
+		'''
+		function to map joint_names with respective motor_ids as well as create a list of motor_ids
+		Ret:
+		joint_name_to_id : Dictionary of joint_name to motor_id
+		motor_id_list	 : List of joint_ids for respective motors in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA ]
+		'''
 		num_joints = self._pybullet_client.getNumJoints(self.stoch2)
 		joint_name_to_id = {}
 		for i in range(num_joints):
 			joint_info = self._pybullet_client.getJointInfo(self.stoch2, i)
 			joint_name_to_id[joint_info[1].decode("UTF-8")] = joint_info[0]
 
-		#adding abduction
 		MOTOR_NAMES = [ "motor_fl_upper_hip_joint",
 						"motor_fl_upper_knee_joint",
 						"motor_fr_upper_hip_joint",
@@ -697,6 +834,13 @@ class Stoch2Env(gym.Env):
 		return joint_name_to_id, motor_id_list
 
 	def ResetLeg(self, leg_id, add_constraint, standstilltorque=10):
+		'''
+		function to reset hip and knee joints' state
+		Args:
+			 leg_id 		  : denotes leg index
+			 add_constraint   : bool to create constraints in lower joints of five bar leg mechanisim
+			 standstilltorque : value of initial torque to set in hip and knee motors for standing condition
+		'''
 		leg_position = LEG_POSITION[leg_id]
 		self._pybullet_client.resetJointState(
 			self.stoch2,
@@ -724,7 +868,6 @@ class Stoch2Env(gym.Env):
 
 			self._pybullet_client.changeConstraint(c, maxForce=200)
 
-		# set the upper motors to zero
 		self._pybullet_client.setJointMotorControl2(
 			bodyIndex=self.stoch2,
 			jointIndex=(self._joint_name_to_id["motor_" + leg_position + "upper_knee_joint"]),
@@ -738,32 +881,25 @@ class Stoch2Env(gym.Env):
 			targetVelocity=0,
 			force=standstilltorque)
 
-		# set the lower joints to zero
 		self._pybullet_client.setJointMotorControl2(
 			bodyIndex=self.stoch2,
 			jointIndex=(self._joint_name_to_id[leg_position + "lower_hip_joint"]),
 			controlMode=self._pybullet_client.VELOCITY_CONTROL,
 			targetVelocity=0,
 			force=0)
+
 		self._pybullet_client.setJointMotorControl2(
 			bodyIndex=self.stoch2,
 			jointIndex=(self._joint_name_to_id[leg_position + "lower_knee_joint"]),
 			controlMode=self._pybullet_client.VELOCITY_CONTROL,
 			targetVelocity=0,
 			force=0)
-		# set the spine motors to zero
-		self._pybullet_client.setJointMotorControl2(
-			bodyIndex=self.stoch2,
-			jointIndex=(self._joint_name_to_id["motor_front_body_spine_joint"]),
-			controlMode=self._pybullet_client.VELOCITY_CONTROL,
-			targetVelocity=0)
-		self._pybullet_client.setJointMotorControl2(
-			bodyIndex=self.stoch2,
-			jointIndex=(self._joint_name_to_id["motor_back_body_spine_joint"]),
-			controlMode=self._pybullet_client.VELOCITY_CONTROL,
-			targetVelocity=0)
+
 
 	def ResetPoseForAbd(self):
+		'''
+		Reset initial conditions of abduction joints
+		'''
 		self._pybullet_client.resetJointState(
 			self.stoch2,
 			self._joint_name_to_id["motor_front_left_abd_joint"],
@@ -781,7 +917,7 @@ class Stoch2Env(gym.Env):
 			self._joint_name_to_id["motor_back_right_abd_joint"],
 			targetValue = 0, targetVelocity = 0)
 
-		#Set control mode for each motor and initial conditions
+
 		self._pybullet_client.setJointMotorControl2(
 			bodyIndex = self.stoch2,
 			jointIndex = (self._joint_name_to_id["motor_front_left_abd_joint"]),
