@@ -216,10 +216,7 @@ class Stoch2Env(gym.Env):
 		self.HyQ = self._pybullet_client.loadURDF(model_path, self.INIT_POSITION,self.INIT_ORIENTATION)
 
 		self._joint_name_to_id, self._motor_id_list  = self.BuildMotorIdList()
-
-		num_legs = 4
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=True)
+		self.ResetLeg()
 		self.ResetPoseForAbd()
 
 		if self._on_rack:
@@ -236,17 +233,14 @@ class Stoch2Env(gym.Env):
 		self.SetLinkMass(11,0)
 
 	def reset_standing_position(self):
-		num_legs = 4
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=False, standstilltorque=10)
+		self.ResetLeg()
 		self.ResetPoseForAbd()
 
 		# Conditions for standstill
 		for i in range(300):
 			self._pybullet_client.stepSimulation()
 
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=False, standstilltorque=0)
+		self.ResetLeg()
 
 
 	def reset(self):
@@ -575,7 +569,7 @@ class Stoch2Env(gym.Env):
 		Rot_Mat = np.array(Rot_Mat)
 		Rot_Mat = np.reshape(Rot_Mat,(3,3))
 
-		plane_normal,self.support_plane_estimated_roll,self.support_plane_estimated_pitch = normal_estimator.vector_method(self.prev_incline_vec, contact_info, self.GetMotorAngles(), Rot_Mat)
+		plane_normal,self.support_plane_estimated_roll,self.support_plane_estimated_pitch = normal_estimator.vector_method_Hyq(self.prev_incline_vec, contact_info, self.GetMotorAngles(), Rot_Mat)
 		self.prev_incline_vec = plane_normal
 
 		self._n_steps += 1
