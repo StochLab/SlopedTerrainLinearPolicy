@@ -13,7 +13,9 @@ Inside the folder, Stoch2_gym_env:
 ### Robots Tested for:
 
 ### Stoch2:
+
 |Orientation\Elevation| 5° |7° |9° |11° |
+|:-------------:|:--:|:--:|:--:|:---:|
 |0°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
 |30°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
 |60°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
