@@ -1,0 +1,52 @@
+{
+    "name":"hyq",
+    "init_pos":[0,0,0.64],
+    "init_ori":[0,0,0,1],
+    "init_angles":[0.7,-1.4,0.7,-1.4,-0.7,1.4,-0.7,1.4,0,0,0,0],
+    "urdf_path":"/robots/hyq/hyq.urdf",
+    "motor_names":[ "lf_hfe_joint",
+        "lf_kfe_joint",
+        "rf_hfe_joint",
+        "rf_kfe_joint",
+        "lh_hfe_joint",
+        "lh_kfe_joint",
+        "rh_hfe_joint",
+        "rh_kfe_joint",
+        "lf_haa_joint",
+        "rf_haa_joint",
+        "lh_haa_joint",
+        "rh_haa_joint"],
+    "motor_model":{
+        "type":"Default",
+        "kp":1600,
+        "kd":90
+    },
+    "IK":{
+        "type":"Spatial_Linkage",
+        "link_lengths":[0.5,0.5],
+        "motor_offsets":{
+            "FL":{"hip":1.57,"knee":0,"abd":0.0},
+            "FR":{"hip":1.57,"knee":0,"abd":0},
+            "BL":{"hip":1.57,"knee":0,"abd":0.0},
+            "BR":{"hip":1.57,"knee":0,"abd":0}
+        },
+        "motor_dir":{
+            "FL":{"hip":1,"knee":1,"abd":-1},
+            "FR":{"hip":1,"knee":1,"abd":-1},
+            "BL":{"hip":1,"knee":1,"abd":-1},
+            "BR":{"hip":1,"knee":1,"abd":-1}
+        },
+        "sol_branch":{"FL":0, "FR":0, "BL":1, "BR":1}
+    },
+    "controller":{
+        "type":"Classic",
+        "body_width":0.414,
+        "body_length":0.717,
+        "pts":"Automatic",
+        "step_length":"Automatic",
+        "step_height":"Automatic",
+        "phase":{"FL":0,"FR":100,"BL":100,"BR":0},
+        "frequency":4.5
+        }
+}
+

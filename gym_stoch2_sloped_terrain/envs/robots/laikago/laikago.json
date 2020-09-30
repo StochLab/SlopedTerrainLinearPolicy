@@ -1,0 +1,24 @@
+{
+    "name":"laikago",
+    "init_pos":[0,0,0.55],
+    "init_ori":[0,0.5,0.5,0],
+    "init_angles":[0,-0.7,0,-0.7,0,-0.7,0,-0.7,0,0,0,0],
+    "urdf_path":"/robots/laikago/laikago_toes.urdf",
+    "motor_names":[ "motor_fl_hip_joint",
+        "motor_fl_knee_joint",
+        "motor_fr_hip_joint",
+        "motor_fr_knee_joint",
+        "motor_bl_hip_joint",
+        "motor_bl_knee_joint",
+        "motor_br_hip_joint",
+        "motor_br_knee_joint",
+        "motor_fl_abd_joint",
+        "motor_fr_abd_joint",
+        "motor_bl_abd_joint",
+        "motor_br_abd_joint"],
+    "motor_model":{
+    "type":"Default",
+    "kp":20,
+    "kd":2
+    }
+}
