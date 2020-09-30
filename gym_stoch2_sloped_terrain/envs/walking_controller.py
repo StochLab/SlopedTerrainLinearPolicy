@@ -14,10 +14,8 @@ from __future__ import print_function
 from dataclasses import dataclass
 from collections import namedtuple
 from utils.ik_class import Stoch2Kinematics
-import os
 import numpy as np
-from scipy.linalg import solve
-import matplotlib.pyplot as plt
+
 PI = np.pi
 no_of_points=100
 

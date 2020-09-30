@@ -1,11 +1,8 @@
 import sys, os
 import numpy as np
 import gym
-import os
 from gym import utils, spaces
-import pdb
 import gym_stoch2_sloped_terrain.envs.walking_controller as walking_controller
-import time
 import math
 import random
 from collections import deque
@@ -13,8 +10,7 @@ import pybullet
 import gym_stoch2_sloped_terrain.envs.bullet_client as bullet_client
 import pybullet_data
 import gym_stoch2_sloped_terrain.envs.planeEstimation.get_terrain_normal as normal_estimator
-import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
+
 
 
 LEG_POSITION = ["fl_", "bl_", "fr_", "br_"]
