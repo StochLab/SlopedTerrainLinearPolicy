@@ -577,7 +577,7 @@ class Stoch2Env(gym.Env):
 		Rot_Mat = np.array(Rot_Mat)
 		Rot_Mat = np.reshape(Rot_Mat,(3,3))
 
-		plane_normal,self.support_plane_estimated_roll,self.support_plane_estimated_pitch = normal_estimator.vector_method(self.prev_incline_vec, contact_info, self.GetMotorAngles(), Rot_Mat)
+		plane_normal,self.support_plane_estimated_roll,self.support_plane_estimated_pitch = normal_estimator.vector_method_Stoch2(self.prev_incline_vec, contact_info, self.GetMotorAngles(), Rot_Mat)
 		self.prev_incline_vec = plane_normal
 
 		self._n_steps += 1
