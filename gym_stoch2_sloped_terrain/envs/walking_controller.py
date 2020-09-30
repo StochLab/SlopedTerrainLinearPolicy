@@ -14,6 +14,8 @@ from __future__ import print_function
 from dataclasses import dataclass
 from collections import namedtuple
 from utils.ik_class import Stoch2Kinematics
+from utils.ik_class import LaikagoKinematics
+from utils.ik_class import HyqKinematics
 import numpy as np
 
 PI = np.pi
@@ -55,7 +57,9 @@ class WalkingController():
         self.MOTOROFFSETS = [2.3562,1.2217]
         self.body_width = 0.24
         self.body_length = 0.37
-        self.Stoch2_IK_2D = Stoch2Kinematics()
+        self.Stoch2_Kin = Stoch2Kinematics()
+        self.Laikago_Kin = LaikagoKinematics()
+        self.Hyq_Kin = HyqKinematics()
 
     def update_leg_theta(self,theta):
         """ Depending on the gait, the theta for every leg is calculated"""
@@ -144,7 +148,7 @@ class WalkingController():
             leg.x, leg.y, leg.z = np.array([[np.cos(leg.phi),0,np.sin(leg.phi)],[0,1,0],[-np.sin(leg.phi),0, np.cos(leg.phi)]])@np.array([x,y,0])
             leg.z = leg.z + leg.z_shift
 
-            leg.motor_knee, leg.motor_hip,leg.motor_abduction = self._inverse_3D(leg.x, leg.y, leg.z)
+            leg.motor_knee, leg.motor_hip,leg.motor_abduction = self.Stoch2_Kin.inverseKinematics(leg.x, leg.y, leg.z)
             leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS[0]
             leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS[1]
 
@@ -154,22 +158,6 @@ class WalkingController():
                             legs.front_left.motor_abduction, legs.front_right.motor_abduction, legs.back_left.motor_abduction, legs.back_right.motor_abduction]
 
         return leg_motor_angles
-    
-    def _inverse_3D(self, x, y, z):
-        '''
-        inverse kinematics  function
-        Args:
-            x : end effector position on X-axis in leg frame
-            y : end effector position on Y-axis in leg frame
-            z : end effector position on Z-axis in leg frame
-
-        Ret:
-            [motor_knee, motor_hip, motor_abduction] :  a list of hip, knee, and abduction motor angles to reach a (x, y, z) position
-        '''
-        motor_abduction = np.arctan2(z,-y)
-        new_coords = np.array([x,-y/np.cos(motor_abduction) - 0.035,z])
-        _,[motor_hip,_,_,motor_knee] = self.Stoch2_IK_2D.inverseKinematics(x = [new_coords[0], -new_coords[1]])
-        return [motor_knee, motor_hip, motor_abduction]
 
     def _update_leg_phi_val(self, leg_phi):
         '''
