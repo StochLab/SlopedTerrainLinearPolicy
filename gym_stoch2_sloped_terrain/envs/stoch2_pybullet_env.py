@@ -551,11 +551,11 @@ class Stoch2Env(gym.Env):
 		self.action = action
 		ii = 0
 
-		abd_m_angle_cmd, leg_m_angle_cmd= self._walkcon.run_eliptical_Traj(self._theta,action)
+		leg_m_angle_cmd = self._walkcon.run_eliptical_Traj(self._theta,action)
 
 		self._theta = constrain_theta(omega * self.dt + self._theta)
 		
-		m_angle_cmd_ext = np.array(leg_m_angle_cmd + abd_m_angle_cmd)
+		m_angle_cmd_ext = np.array(leg_m_angle_cmd)
 	
 		m_vel_cmd_ext = np.zeros(12)
 
