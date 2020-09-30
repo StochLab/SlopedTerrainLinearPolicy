@@ -158,8 +158,8 @@ class WalkingController():
 
 
             leg.motor_knee, leg.motor_hip,leg.motor_abduction = self.Stoch2_Kin.inverseKinematics(leg.x, leg.y, leg.z)
-            leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS[0]
-            leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS[1]
+            leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_Stoch[0]
+            leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_Stoch[1]
 
 
 
@@ -202,7 +202,7 @@ class WalkingController():
             leg.z = leg.z - leg.z_shift
             leg.z = -1 * leg.z
 
-            leg.motor_knee, leg.motor_hip, leg.motor_abduction = self._inverse_3D_HyQ(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_HyQ[leg.name])
+            leg.motor_knee, leg.motor_hip, leg.motor_abduction = self.Hyq_Kin.inverseKinematics(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_HyQ[leg.name])
             leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_HYQ[0]
             leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_HYQ[1]
             leg.motor_abduction = -1 * leg.motor_abduction
@@ -248,7 +248,7 @@ class WalkingController():
 
             if leg.name == "fl" or leg.name == "bl":
                 leg.z = -leg.z
-            leg.motor_knee, leg.motor_hip, leg.motor_abduction = self._inverse_3Dlaikago(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_Laikago[leg.name])
+            leg.motor_knee, leg.motor_hip, leg.motor_abduction = self.Laikago_Kin.inverseKinematics(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_Laikago[leg.name])
 
             leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_Laikago[0]
             leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_Laikago[1]

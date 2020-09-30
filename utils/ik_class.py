@@ -118,19 +118,19 @@ class HyqKinematics(object):
         return motor_knee, motor_hip, theta
     
     def forwardKinematics(self, q):
-		'''
-		Forward kinematics of the    HYQ leg
-		Args:
+        '''
+        Forward kinematics of the    HYQ leg
+        Args:
 		-- q : Active joint angles, i.e., [theta1, theta4], angles of the links 1 and 4 (the driven links)
 		Return:
 		-- valid : Specifies if the result is valid
 		-- x : End-effector position
 		'''
-		l1 = 0.5 
-		l2 = 0.5 
-		x = l1 * math.cos(q[0]) + l2 * math.cos(q[0]+q[1])
-		y = l1 * math.sin(q[0]) + l2 * math.sin(q[0]+q[1])
-		return [x,y]
+        l1 = 0.5 
+        l2 = 0.5
+        x = l1 * math.cos(q[0]) + l2 * math.cos(q[0]+q[1])
+        y = l1 * math.sin(q[0]) + l2 * math.sin(q[0]+q[1])
+        return [x,y]
 
 
 
@@ -172,7 +172,7 @@ class LaikagoKinematics(object):
         return motor_knee, motor_hip, theta
 
     def forwardKinematics(self, q):
-		'''
+        '''
 		Forward kinematics of the    HYQ leg
 		Args:
 		-- q : Active joint angles, i.e., [theta1, theta4], angles of the links 1 and 4 (the driven links)
@@ -180,11 +180,11 @@ class LaikagoKinematics(object):
 		-- valid : Specifies if the result is valid
 		-- x : End-effector position
 		'''
-		l1 = 0.25
-		l2 = 0.25 
-		x = l1 * math.cos(q[0]) + l2 * math.cos(q[0]+q[1])
-		y = l1 * math.sin(q[0]) + l2 * math.sin(q[0]+q[1])
-		return [x,y]
+        l1 = 0.25
+        l2 = 0.25 
+        x = l1 * math.cos(q[0]) + l2 * math.cos(q[0]+q[1])
+        y = l1 * math.sin(q[0]) + l2 * math.sin(q[0]+q[1])
+        return [x,y]
 
 class Stoch2Kinematics(object):
     '''
