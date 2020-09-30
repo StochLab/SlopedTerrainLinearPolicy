@@ -54,7 +54,15 @@ class WalkingController():
         self.back_left = leg_data('bl')
         self.back_right = leg_data('br')
         self.gait_type = gait_type
-        self.MOTOROFFSETS = [2.3562,1.2217]
+
+        self.MOTOROFFSETS_Stoch = [2.3562,1.2217]
+        self.MOTOROFFSETS_Laikago = [0.87, 0.7]
+        self.MOTOROFFSETS_HYQ = [1.57, 0]
+
+        self.leg_name_to_sol_branch_HyQ = {'fl':0, 'fr':0, 'bl':1, 'br':1}
+        self.leg_name_to_dir_Laikago = {'fl': 1, 'fr': -1, 'bl': 1, 'br': -1}
+        self.leg_name_to_sol_branch_Laikago = {'fl': 0, 'fr': 0, 'bl': 0, 'br': 0}
+
         self.body_width = 0.24
         self.body_length = 0.37
         self.Stoch2_Kin = Stoch2Kinematics()
@@ -119,7 +127,7 @@ class WalkingController():
         return legs
     
     
-    def run_eliptical_Traj(self, theta, action):
+    def run_elliptical_Traj_Stoch(self, theta, action):
         '''
         Semi-elliptical trajectory controller
         Args:
@@ -148,9 +156,11 @@ class WalkingController():
             leg.x, leg.y, leg.z = np.array([[np.cos(leg.phi),0,np.sin(leg.phi)],[0,1,0],[-np.sin(leg.phi),0, np.cos(leg.phi)]])@np.array([x,y,0])
             leg.z = leg.z + leg.z_shift
 
+
             leg.motor_knee, leg.motor_hip,leg.motor_abduction = self.Stoch2_Kin.inverseKinematics(leg.x, leg.y, leg.z)
             leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS[0]
             leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS[1]
+
 
 
         leg_motor_angles = [legs.front_left.motor_hip, legs.front_left.motor_knee, legs.front_right.motor_hip, legs.front_right.motor_knee,
@@ -158,6 +168,101 @@ class WalkingController():
                             legs.front_left.motor_abduction, legs.front_right.motor_abduction, legs.back_left.motor_abduction, legs.back_right.motor_abduction]
 
         return leg_motor_angles
+
+
+    def run_elliptical_Traj_HyQ(self, theta, action):
+        '''
+        Semi-elliptical trajectory controller
+        Args:
+            theta  : trajectory cycle parameter theta
+            action : trajectory modulation parameters predicted by the policy
+        Ret:
+            leg_motor_angles : list of motors positions for the desired action [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA]
+        '''
+        legs = self.initialize_leg_state(theta, action)
+
+        y_center = -0.7
+        foot_clearance = 0.12
+
+        for leg in legs:
+            leg_theta = (leg.theta / (2 * no_of_points)) * 2 * PI
+            leg.r = leg.step_length / 2
+
+            if self.gait_type == "trot":
+                x = -leg.r * np.cos(leg_theta) - leg.x_shift
+                if leg_theta > PI:
+                    flag = 0
+                else:
+                    flag = 1
+                y = foot_clearance * np.sin(leg_theta) * flag + y_center - leg.y_shift
+
+            leg.x, leg.y, leg.z = np.array(
+                [[np.cos(leg.phi), 0, np.sin(leg.phi)], [0, 1, 0], [-np.sin(leg.phi), 0, np.cos(leg.phi)]]) @ np.array(
+                [x, y, 0])
+            leg.z = leg.z - leg.z_shift
+            leg.z = -1 * leg.z
+
+            leg.motor_knee, leg.motor_hip, leg.motor_abduction = self._inverse_3D_HyQ(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_HyQ[leg.name])
+            leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_HYQ[0]
+            leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_HYQ[1]
+            leg.motor_abduction = -1 * leg.motor_abduction
+
+        leg_motor_angles = [legs.front_left.motor_hip, legs.front_left.motor_knee, legs.front_right.motor_hip,
+                            legs.front_right.motor_knee, legs.back_left.motor_hip, legs.back_left.motor_knee,
+                            legs.back_right.motor_hip, legs.back_right.motor_knee, legs.front_left.motor_abduction,
+                            legs.front_right.motor_abduction, legs.back_left.motor_abduction, legs.back_right.motor_abduction]
+
+        return leg_motor_angles
+
+
+
+    def run_elliptical_Traj_Laikago(self, theta, action):
+        '''
+        Semi-elliptical trajectory controller
+        Args:
+            theta  : trajectory cycle parameter theta
+            action : trajectory modulation parameters predicted by the policy
+        Ret:
+            leg_motor_angles : list of motors positions for the desired action [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA]
+        '''
+        legs = self.initialize_leg_state(theta, action)
+
+        y_center = -0.3
+        foot_clearance = 0.1
+
+        for leg in legs:
+            leg_theta = (leg.theta / (2 * no_of_points)) * 2 * PI
+            leg.r = leg.step_length / 2
+
+            if self.gait_type == "trot":
+                x = -leg.r * np.cos(leg_theta) + leg.x_shift
+                if leg_theta > PI:
+                    flag = 0
+                else:
+                    flag = 1
+                y = foot_clearance * np.sin(leg_theta) * flag + y_center + leg.y_shift
+
+            leg.x, leg.y, leg.z = np.array([[np.cos(leg.phi), 0, np.sin(leg.phi)], [0, 1, 0], [-np.sin(leg.phi), 0, np.cos(leg.phi)]]) @ np.array([x, y, 0])
+
+            leg.z = leg.z + leg.z_shift
+
+            if leg.name == "fl" or leg.name == "bl":
+                leg.z = -leg.z
+            leg.motor_knee, leg.motor_hip, leg.motor_abduction = self._inverse_3Dlaikago(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_Laikago[leg.name])
+
+            leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_Laikago[0]
+            leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_Laikago[1]
+            leg.motor_abduction = leg.motor_abduction * self.leg_name_to_dir_Laikago[leg.name]
+
+
+        leg_motor_angles = [legs.front_left.motor_hip, legs.front_left.motor_knee, legs.front_left.motor_abduction,
+                            legs.back_right.motor_hip, legs.back_right.motor_knee, legs.back_right.motor_abduction,
+                            legs.front_right.motor_hip, legs.front_right.motor_knee, legs.front_right.motor_abduction,
+                            legs.back_left.motor_hip, legs.back_left.motor_knee, legs.back_left.motor_abduction]
+
+        return leg_motor_angles
+
+
 
     def _update_leg_phi_val(self, leg_phi):
         '''
