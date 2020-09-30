@@ -257,7 +257,7 @@ class Stoch2Env(gym.Env):
 
 	def reset(self):
 		'''
-		This function resets the current environment accordingly to the physical and dynamics properties set by Set_Randomization()
+		This function resets the environment 
 		Note : Set_Randomization() is called before reset() to either randomize or set environment in default conditions.
 		'''
 		self._theta = 0
