@@ -95,8 +95,7 @@ class Stoch2Env(gym.Env):
 			phase = [0, no_of_points, no_of_points, 0]
 		elif gait is 'walk':
 			phase = [0, no_of_points, 3*no_of_points/2 ,no_of_points/2]
-		self._walkcon = walking_controller.WalkingController(gait_type=gait,
-															 phase=phase)
+		self._walkcon = walking_controller.WalkingController(gait_type=gait, phase=phase)
 		self.inverse = False
 		self._cam_dist = 1.0
 		self._cam_yaw = 0.0
@@ -342,8 +341,8 @@ class Stoch2Env(gym.Env):
 			mass     : value of extra mass to be added
 
 		Ret:
-			new_mass 	 : mass of the link after addition
-		Note : Currently this function supports addition of masses in front and back link only (0, 11)
+			new_mass : mass of the link after addition
+		Note : Presently, this function supports addition of masses in the front and back link only (0, 11)
 		'''
 		link_mass = self._pybullet_client.getDynamicsInfo(self.stoch2,link_idx)[0]
 		if(link_idx==0):
@@ -372,7 +371,7 @@ class Stoch2Env(gym.Env):
 		'''
 		This function helps in randomizing the physical and dynamics parameters of the environment to robustify the policy.
 		These parameters include wedge incline, wedge orientation, friction, mass of links, motor strength and external perturbation force.
-		Note : If default is True, this function set above mentioned parameters in user defined manner
+		Note : If default argument is True, this function set above mentioned parameters in user defined manner
 		'''
 		if default:
 			frc=[0.55,0.6,0.8]
@@ -461,17 +460,17 @@ class Stoch2Env(gym.Env):
 		Ret :
 			action : scaled action parameters
 
-		Note : The convention of Cartesian axes for leg frame in the codebase follow this order, Y points up, X forward and Z right.
-			   While in research paper we follow this order, Z points up, X forward and Y right.
+		Note : The convention of Cartesian axes for leg frame in the codebase follow this order, Y points up, X forward and Z right. 
+		       While in research paper we follow this order, Z points up, X forward and Y right.
 		'''
 
 		action = np.clip(action, -1, 1)
 
 		action[:4] = (action[:4] + 1)/2					# Step lengths are positive always
 
-		action[:4] = action[:4] *2 * 0.068  			# Max step length = 2x0.068
+		action[:4] = action[:4] *2 * 0.068  				# Max step length = 2x0.068
 
-		action[4:8] = action[4:8] * PI/2				#PHI can be [-pi/2, pi/2]
+		action[4:8] = action[4:8] * PI/2				# PHI can be [-pi/2, pi/2]
 
 		action[8:12] = (action[8:12]+1)/2				# Y-shifts are positive always
 
@@ -484,10 +483,10 @@ class Stoch2Env(gym.Env):
 
 	def get_foot_contacts(self):
 		'''
-		Retrieve foot contact information with the supporting ground or any special structure (wedge, stairs)
+		Retrieve foot contact information with the supporting ground and any special structure (wedge/stairs).
 		Ret:
-			foot_contact_info : array of ones and zeros denoting foot contact information, first four values for
-								contact with plane and next four for contact with wedge/stairs in this order [FR, FL, BR, BL]
+			foot_contact_info : 8 dimensional binary array, first four values denote contact information of feet [FR, FL, BR, BL] with the ground
+			while next four with the special structure. 
 		'''
 		foot_ids = [8,3,19,14]
 		foot_contact_info = np.zeros(8)
@@ -514,13 +513,13 @@ class Stoch2Env(gym.Env):
 
 	def step(self, action):
 		'''
-		function to perform simulation step
+		function to perform one step in the environment
 		Args:
 			action : array of action values
 		Ret:
 			ob 	   : observation after taking step
-			reward : reward received after taking step
-			done   : whether the step terminates the env
+			reward     : reward received after taking step
+			done       : whether the step terminates the env
 			{}	   : any information of the env (will be added later)
 		'''
 		action = self.transform_action(action)
@@ -617,7 +616,7 @@ class Stoch2Env(gym.Env):
 			pos 		: current position of the robot's base in world frame
 			orientation : current orientation of robot's base (Quaternions) in world frame
 		Ret:
-			done 		: return true if termination conditions satisfied
+			done 		: return True if termination conditions satisfied
 		'''
 		done = False
 		RPY = self._pybullet_client.getEulerFromQuaternion(orientation)
@@ -641,10 +640,11 @@ class Stoch2Env(gym.Env):
 
 	def _get_reward(self):
 		'''
-		Calculate reward recieved for roll pitch yaw stability, normal height of the robot and forward distance moved on the slope:
+		Calculates reward achieved by the robot for RPY stability, torso height criterion and forward distance moved on the slope:
 		Ret:
 			reward : reward achieved
-			done : if env terminates
+			done   : return True if environment terminates
+			
 		'''
 		wedge_angle = self.incline_deg*PI/180
 		robot_height_from_support_plane = 0.243	
