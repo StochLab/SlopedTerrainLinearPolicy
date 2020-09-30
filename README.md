@@ -10,6 +10,15 @@ Inside the folder, Stoch2_gym_env:
                 
         python -m pip install .
 
+### Robots Tested for:
+
+### Stoch2:
+|Orientation\Elevation| 5° |7° |9° |11° |
+|0°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|30°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|60°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|90°|:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+
 The code base was tested with gym (0.17.2), pybullet (2.8.2) with a python version of 3.6.9. However it is expected to work fine for any future versions of these packages, though they havent been tested.
 
 ### To make an initial policy:
