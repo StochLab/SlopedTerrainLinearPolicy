@@ -1,7 +1,6 @@
-import sys, os
 import numpy as np
 import gym
-from gym import utils, spaces
+from gym import spaces
 import gym_stoch2_sloped_terrain.envs.walking_controller as walking_controller
 import math
 import random
@@ -217,9 +216,8 @@ class Stoch2Env(gym.Env):
 
 		self._joint_name_to_id, self._motor_id_list  = self.BuildMotorIdList()
 
-		num_legs = 4
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=True)
+
+		self.ResetLeg()
 		self.ResetPoseForAbd()
 
 		if self._on_rack:
