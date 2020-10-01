@@ -27,7 +27,7 @@ def constrain_theta(theta):
 		theta = theta + 2*no_of_points
 	return theta
 
-class Stoch2Env(gym.Env):
+class HyQEnv(gym.Env):
 
 	def __init__(self,
 				 render = False,
@@ -145,7 +145,7 @@ class Stoch2Env(gym.Env):
 		
 		self.hard_reset()
 
-		self.Set_Randomization(default=True, idx1=2, idx2=2)
+		self.randomize_only_inclines(default=True, idx1=2, idx2=2)
 
 		if(self._is_stairs):
 			boxHalfLength = 0.1
@@ -229,8 +229,7 @@ class Stoch2Env(gym.Env):
 
 		self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
 		self.SetFootFriction(self.friction)
-		self.SetLinkMass(0,0)
-		self.SetLinkMass(11,0)
+
 
 	def reset_standing_position(self):
 		self.ResetLeg()
