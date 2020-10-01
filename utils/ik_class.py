@@ -114,7 +114,7 @@ class HyqKinematics(object):
     def inverseKinematics(self, x, y, z, br):
         theta = np.arctan2(z, -y)
         new_coords = np.array([x, y / np.cos(theta), z])
-        motor_hip, motor_knee = self._inverse_hyq(new_coords[0], new_coords[1], br)
+        motor_hip, motor_knee = self.inverse2D(new_coords[0], new_coords[1], br)
         return motor_knee, motor_hip, theta
     
     def forwardKinematics(self, q):
@@ -168,7 +168,7 @@ class LaikagoKinematics(object):
         '''
         theta = np.arctan2(z,-y)
         new_coords = np.array([x,y/np.cos(theta),z])
-        motor_hip, motor_knee = self._inverse_laikago(new_coords[0], new_coords[1], br)
+        motor_hip, motor_knee = self.inverse2D(new_coords[0], new_coords[1], br)
         return motor_knee, motor_hip, theta
 
     def forwardKinematics(self, q):
