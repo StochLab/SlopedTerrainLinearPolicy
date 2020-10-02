@@ -146,6 +146,16 @@ class LaikagoKinematics(object):
         sol_branch = br
         t1 = (-4*l2*y + np.sqrt(16*l2**2*y**2 - 4*(-l1**2 + l2**2 - 2*l2*x + x**2 + y**2)*(-l1**2 + l2**2 + 2*l2*x + x**2 + y**2)))/(2.*(l1**2 - l2**2 - 2*l2*x - x**2 - y**2))
         t2 = (-4*l2*y - np.sqrt(16*l2**2*y**2 - 4*(-l1**2 + l2**2 - 2*l2*x + x**2 + y**2)*(-l1**2 + l2**2 + 2*l2*x + x**2 + y**2)))/(2.*(l1**2 - l2**2 - 2*l2*x - x**2 - y**2))
+        '''
+        r1 = math.sqrt(x ** 2 + y ** 2)
+        phi_1 = math.acos((l1 ** 2 + r1 ** 2 - l2 ** 2) / (2 * l1 * r1))
+        phi_2 = math.atan2(y, x)
+        theta_deg1 = np.rad2deg(phi_2 - phi_1)
+        theta_1 = np.deg2rad(theta_deg1)
+        phi_3 = math.acos((l1 ** 2 + l2 ** 2 - r1 ** 2) / (2 * l1 * l2))
+        theta_deg2 = np.rad2deg(phi_3)
+        theta_2 = np.deg2rad(theta_deg2)
+        '''
         if(sol_branch):
             t = t2
         else:
@@ -154,6 +164,7 @@ class LaikagoKinematics(object):
         th1 = np.arctan2(y - l2*np.sin(th12), x - l2*np.cos(th12))
         th2 = th12 - th1
         return [th1,th2]
+        #return [theta_1,theta_2]
 
     def inverseKinematics(self, x,y,z,br):
         '''
