@@ -27,7 +27,7 @@ def constrain_theta(theta):
 		theta = theta + 2*no_of_points
 	return theta
 
-class Stoch2Env(gym.Env):
+class LaikagoEnv(gym.Env):
 
 	def __init__(self,
 				 render = False,
@@ -59,13 +59,13 @@ class Stoch2Env(gym.Env):
 
 		self._theta = 0
 
-		self._frequency = 2.5
+		self._frequency = -3
 		self.termination_steps = end_steps
 		self.downhill = downhill
 
 		#PD gains
-		self._kp = 200
-		self._kd = 10
+		self._kp = 500
+		self._kd = 50
 
 		self.dt = 0.005
 		self._frame_skip = 25
@@ -80,7 +80,7 @@ class Stoch2Env(gym.Env):
 		self.last_yaw = 0
 		self._distance_limit = float("inf")
 
-		self.current_com_height = 0.243
+		self.current_com_height = 0.7
 		
 		#wedge_parameters
 		self.wedge_start = 0.5 
@@ -106,12 +106,11 @@ class Stoch2Env(gym.Env):
 		self.x_f = 0
 		self.y_f = 0
 
-		self.clips=7
+		self.clips = 100
 
-		self.friction = 0.6
+		self.friction = 0.7
 		self.ori_history_length = 3
-		self.ori_history_queue = deque([0]*3*self.ori_history_length, 
-		                            maxlen=3*self.ori_history_length)#observation queue
+		self.ori_history_queue = deque([0]*3*self.ori_history_length, maxlen=3*self.ori_history_length) #observation queue
 
 		self.step_disp = deque([0]*100, maxlen=100)
 		self.stride = 5
@@ -124,7 +123,7 @@ class Stoch2Env(gym.Env):
 		self.terrain_pitch = []
 		self.add_IMU_noise = IMU_Noise
 
-		self.INIT_POSITION =[0,0,0.3]
+		self.INIT_POSITION = [0, 0, 0.65]  
 		self.INIT_ORIENTATION = [0, 0, 0, 1]
 
 		self.support_plane_estimated_pitch = 0
@@ -146,7 +145,7 @@ class Stoch2Env(gym.Env):
 		
 		self.hard_reset()
 
-		self.Set_Randomization(default=True, idx1=2, idx2=2)
+		self.randomize_only_inclines(default=True)
 
 		if(self._is_stairs):
 			boxHalfLength = 0.1
@@ -192,7 +191,7 @@ class Stoch2Env(gym.Env):
 					[math.radians(self.incline_deg) * math.sin(self.incline_ori),
 					 -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
 
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(
+				self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(
 					math.radians(self.incline_deg)) * abs(self.wedge_start)
 
 				self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
@@ -201,8 +200,7 @@ class Stoch2Env(gym.Env):
 				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(
 					self.incline_deg) + ".urdf"
 
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(
-					math.radians(self.incline_deg)) * 1.5
+				self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(math.radians(self.incline_deg)) * 1.5
 
 				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
 
@@ -213,41 +211,36 @@ class Stoch2Env(gym.Env):
 			self.SetWedgeFriction(0.7)
 
 
-		model_path = 'gym_stoch2_sloped_terrain/envs/robots/stoch_two_abduction_urdf/urdf/stoch_two_abduction_urdf.urdf'
-		self.stoch2 = self._pybullet_client.loadURDF(model_path, self.INIT_POSITION,self.INIT_ORIENTATION)
+		model_path = 'gym_stoch2_sloped_terrain/envs/robots/laikago/laikago_toes_zup.urdf'
+		self.Laikago = self._pybullet_client.loadURDF(model_path, self.INIT_POSITION,self.INIT_ORIENTATION)
 
 		self._joint_name_to_id, self._motor_id_list  = self.BuildMotorIdList()
 
-		num_legs = 4
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=True)
+		self.ResetLeg()
 		self.ResetPoseForAbd()
 
 		if self._on_rack:
 			self._pybullet_client.createConstraint(
-				self.stoch2, -1, -1, -1, self._pybullet_client.JOINT_FIXED,
-				[0, 0, 0], [0, 0, 0], [0, 0, 0.3])
+				self.Laikago, -1, -1, -1, self._pybullet_client.JOINT_FIXED,
+				[0, 0, 0], [0, 0, 0], [0, 0,self.INIT_POSITION[2]])
 
-		self._pybullet_client.resetBasePositionAndOrientation(self.stoch2, self.INIT_POSITION, self.INIT_ORIENTATION)
-		self._pybullet_client.resetBaseVelocity(self.stoch2, [0, 0, 0], [0, 0, 0])
+		self._pybullet_client.resetBasePositionAndOrientation(self.Laikago, self.INIT_POSITION, self.INIT_ORIENTATION)
+		self._pybullet_client.resetBaseVelocity(self.Laikago, [0, 0, 0], [0, 0, 0])
 
 		self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
 		self.SetFootFriction(self.friction)
-		self.SetLinkMass(0,0)
-		self.SetLinkMass(11,0)
+
 
 	def reset_standing_position(self):
-		num_legs = 4
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=False, standstilltorque=10)
+
+		self.ResetLeg()
 		self.ResetPoseForAbd()
 
 		# Conditions for standstill
 		for i in range(300):
 			self._pybullet_client.stepSimulation()
 
-		for i in range(num_legs):
-			self.ResetLeg(i, add_constraint=False, standstilltorque=0)
+		self.ResetLeg()
 
 
 	def reset(self):
@@ -276,16 +269,16 @@ class Stoch2Env(gym.Env):
 					[math.radians(self.incline_deg) * math.sin(self.incline_ori),
 					 -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
 
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * abs(self.wedge_start)
+				self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(math.radians(self.incline_deg)) * abs(self.wedge_start)
 
 				self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
 
 			else:
 				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(self.incline_deg) + ".urdf"
 
-				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * 1.5
+				self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(math.radians(self.incline_deg)) * 1.5
 
-				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
+				self.INIT_POSITION = [0.3, 0, self.robot_landing_height]
 
 				self.INIT_ORIENTATION = [0, 0, 0, 1]
 
@@ -293,8 +286,8 @@ class Stoch2Env(gym.Env):
 			self.wedge = self._pybullet_client.loadURDF(wedge_model_path, self.wedgePos, self.wedgeOrientation)
 			self.SetWedgeFriction(0.7)
 
-		self._pybullet_client.resetBasePositionAndOrientation(self.stoch2, self.INIT_POSITION, self.INIT_ORIENTATION)
-		self._pybullet_client.resetBaseVelocity(self.stoch2, [0, 0, 0], [0, 0, 0])
+		self._pybullet_client.resetBasePositionAndOrientation(self.Laikago, self.INIT_POSITION, self.INIT_ORIENTATION)
+		self._pybullet_client.resetBaseVelocity(self.Laikago, [0, 0, 0], [0, 0, 0])
 		self.reset_standing_position()
 
 		self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
@@ -313,11 +306,11 @@ class Stoch2Env(gym.Env):
 			life_time  :  life time of the visualization
  		'''
 		force_applied = [x_f,y_f,0]
-		self._pybullet_client.applyExternalForce(self.stoch2, link_index, forceObj=[x_f,y_f,0],posObj=[0,0,0],flags=self._pybullet_client.LINK_FRAME)
+		self._pybullet_client.applyExternalForce(self.Laikago, link_index, forceObj=[x_f,y_f,0],posObj=[0,0,0],flags=self._pybullet_client.LINK_FRAME)
 		f_mag = np.linalg.norm(np.array(force_applied))
 
 		if(visulaize and f_mag != 0.0):
-			point_of_force = self._pybullet_client.getLinkState(self.stoch2, link_index)[0]
+			point_of_force = self._pybullet_client.getLinkState(self.Laikago, link_index)[0]
 			
 			lam = 1/(2*f_mag)
 			dummy_pt = [point_of_force[0]-lam*force_applied[0],
@@ -339,13 +332,13 @@ class Stoch2Env(gym.Env):
 			new_mass : mass of the link after addition
 		Note : Presently, this function supports addition of masses in the front and back link only (0, 11)
 		'''
-		link_mass = self._pybullet_client.getDynamicsInfo(self.stoch2,link_idx)[0]
+		link_mass = self._pybullet_client.getDynamicsInfo(self.Laikago,link_idx)[0]
 		if(link_idx==0):
 			link_mass = mass+1.1
-			self._pybullet_client.changeDynamics(self.stoch2, 0, mass=link_mass)
+			self._pybullet_client.changeDynamics(self.Laikago, 0, mass=link_mass)
 		elif(link_idx==11):
 			link_mass = mass+1.1
-			self._pybullet_client.changeDynamics(self.stoch2, 11, mass=link_mass)
+			self._pybullet_client.changeDynamics(self.Laikago, 11, mass=link_mass)
 
 		return link_mass
 		
@@ -358,7 +351,7 @@ class Stoch2Env(gym.Env):
 		Ret:
 			m[0] : mass of the link
 		'''
-		m = self._pybullet_client.getDynamicsInfo(self.stoch2,link_idx)
+		m = self._pybullet_client.getDynamicsInfo(self.Laikago,link_idx)
 		return m[0]
 	
 
@@ -461,19 +454,21 @@ class Stoch2Env(gym.Env):
 
 		action = np.clip(action, -1, 1)
 
-		action[:4] = (action[:4] + 1)/2					# Step lengths are positive always
+		action[:4] = (action[:4] + 1) / 2  # Step lengths are positive always
 
-		action[:4] = action[:4] *2 * 0.068  				# Max step length = 2x0.068
+		action[:4] = action[:4] * 3 * 0.068  # Max steplength = 2x0.068
 
-		action[4:8] = action[4:8] * PI/2				# PHI can be [-pi/2, pi/2]
+		action[4:8] = action[4:8] * PI / 2  # PHI can be [-pi/2, pi/2]
 
-		action[8:12] = (action[8:12]+1)/2				# Y-shifts are positive always
+		#action[8:12] = (action[8:12] + 1) / 2  # el1ipse center y is positive always
+		action[8:12] = 0.07*(action[8:12] + 1) / 2  # el1ipse center y is positive always
 
-		action[8:16] = self.getYXshift(action[8:16])
+		#action[8:16] = self.getYXshift(action[8:16]) * 2.5  # * 0.1 / 0.068
 
-		action[16:20] = action[16:20]*0.035				# Max allowed Z-shift due to abduction limits is 3.5cm
-		action[17] = -action[17]
-		action[19] = -action[19]
+		action[12:16] = -1 * 0.1 * action[12:16]
+		action[16:20] = action[16:20] * 0.035 * 2.5  # * 0.1 / 0.068  # ellipse in and out
+		action[16] = -action[16]
+		action[18] = -action[18]
 		return action
 
 	def get_foot_contacts(self):
@@ -483,22 +478,22 @@ class Stoch2Env(gym.Env):
 			foot_contact_info : 8 dimensional binary array, first four values denote contact information of feet [FR, FL, BR, BL] with the ground
 			while next four with the special structure. 
 		'''
-		foot_ids = [8,3,19,14]
+		foot_ids = [3,7,11,15]
 		foot_contact_info = np.zeros(8)
 
 		for leg in range(4):
-			contact_points_with_ground = self._pybullet_client.getContactPoints(self.plane, self.stoch2, -1, foot_ids[leg])
+			contact_points_with_ground = self._pybullet_client.getContactPoints(self.plane, self.Laikago, -1, foot_ids[leg])
 			if len(contact_points_with_ground) > 0:
 				foot_contact_info[leg] = 1
 
 			if self._is_wedge:
-				contact_points_with_wedge = self._pybullet_client.getContactPoints(self.wedge, self.stoch2, -1, foot_ids[leg])
+				contact_points_with_wedge = self._pybullet_client.getContactPoints(self.wedge, self.Laikago, -1, foot_ids[leg])
 				if len(contact_points_with_wedge) > 0:
 					foot_contact_info[leg+4] = 1
 
 			if self._is_stairs:
 				for steps in self.stairs:
-					contact_points_with_stairs = self._pybullet_client.getContactPoints(steps, self.stoch2, -1,
+					contact_points_with_stairs = self._pybullet_client.getContactPoints(steps, self.Laikago, -1,
 																					   foot_ids[leg])
 					if len(contact_points_with_stairs) > 0:
 						foot_contact_info[leg + 4] = 1
@@ -546,7 +541,7 @@ class Stoch2Env(gym.Env):
 		self.action = action
 		ii = 0
 
-		leg_m_angle_cmd = self._walkcon.run_elliptical_Traj_Stoch(self._theta,action)
+		leg_m_angle_cmd = self._walkcon.run_elliptical_Traj_Laikago(self._theta,action)
 
 		self._theta = constrain_theta(omega * self.dt + self._theta)
 		
@@ -558,7 +553,7 @@ class Stoch2Env(gym.Env):
 
 		for _ in range(n_frames):
 			ii = ii + 1
-			applied_motor_torque = self._apply_pd_control(m_angle_cmd_ext, m_vel_cmd_ext)
+			applied_motor_torque = self._apply_pd_control(m_angle_cmd_ext, m_vel_cmd_ext, self._theta)
 			self._pybullet_client.stepSimulation()
 
 			if self._n_steps >=self.pertub_steps and self._n_steps <= self.pertub_steps + self.stride:
@@ -576,7 +571,7 @@ class Stoch2Env(gym.Env):
 		Rot_Mat = np.array(Rot_Mat)
 		Rot_Mat = np.reshape(Rot_Mat,(3,3))
 
-		plane_normal,self.support_plane_estimated_roll,self.support_plane_estimated_pitch = normal_estimator.vector_method_Stoch2(self.prev_incline_vec, contact_info, self.GetMotorAngles(), Rot_Mat)
+		plane_normal,self.support_plane_estimated_roll,self.support_plane_estimated_pitch = normal_estimator.vector_method_Laikago(self.prev_incline_vec, contact_info, self.GetMotorAngles(), Rot_Mat)
 		self.prev_incline_vec = plane_normal
 
 		self._n_steps += 1
@@ -685,7 +680,7 @@ class Stoch2Env(gym.Env):
 
 		return reward, done
 
-	def _apply_pd_control(self, motor_commands, motor_vel_commands):
+	def _apply_pd_control(self, motor_commands, motor_vel_commands, theta):
 		'''
 		Apply PD control to reach desired motor position commands
 		Ret:
@@ -693,9 +688,31 @@ class Stoch2Env(gym.Env):
 		'''
 		qpos_act = self.GetMotorAngles()
 		qvel_act = self.GetMotorVelocities()
-		applied_motor_torque = self._kp * (motor_commands - qpos_act) + self._kd * (motor_vel_commands - qvel_act)
+		applied_motor_torque = np.zeros(12)
+		if theta > 100:
+			kp1 = 220
+			kd1 = 20
+			kp2 = 500
+			kd2 = 50
+			applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
+										(motor_vel_commands[0:6] - qvel_act[0:6])
+			applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
+										 (motor_vel_commands[6:12] - qvel_act[6:12])
 
+		else:
+			kp1 = 500
+			kd1 = 50
+			kp2 = 220
+			kd2 = 20
+
+			applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
+										(motor_vel_commands[0:6] - qvel_act[0:6])
+			applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
+										 (motor_vel_commands[6:12] - qvel_act[6:12])
+
+		self.clips = 60
 		applied_motor_torque = np.clip(np.array(applied_motor_torque), -self.clips, self.clips)
+
 		applied_motor_torque = applied_motor_torque.tolist()
 
 		for motor_id, motor_torque in zip(self._motor_id_list, applied_motor_torque):
@@ -733,21 +750,21 @@ class Stoch2Env(gym.Env):
 		'''
 		This function returns the current joint angles in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA ]
 		'''
-		motor_ang = [self._pybullet_client.getJointState(self.stoch2, motor_id)[0] for motor_id in self._motor_id_list]
+		motor_ang = [self._pybullet_client.getJointState(self.Laikago, motor_id)[0] for motor_id in self._motor_id_list]
 		return motor_ang
 
 	def GetMotorVelocities(self):
 		'''
 		This function returns the current joint velocities in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA ]
 		'''
-		motor_vel = [self._pybullet_client.getJointState(self.stoch2, motor_id)[1] for motor_id in self._motor_id_list]
+		motor_vel = [self._pybullet_client.getJointState(self.Laikago, motor_id)[1] for motor_id in self._motor_id_list]
 		return motor_vel
 
 	def GetBasePosAndOrientation(self):
 		'''
 		This function returns the robot torso position(X,Y,Z) and orientation(Quaternions) in world frame
 		'''
-		position, orientation = (self._pybullet_client.getBasePositionAndOrientation(self.stoch2))
+		position, orientation = (self._pybullet_client.getBasePositionAndOrientation(self.Laikago))
 		return position, orientation
 
 	def GetBaseAngularVelocity(self):
@@ -755,7 +772,7 @@ class Stoch2Env(gym.Env):
 		This function returns the robot base angular velocity in world frame
 		Ret: list of 3 floats
 		'''
-		basevelocity= self._pybullet_client.getBaseVelocity(self.stoch2)
+		basevelocity= self._pybullet_client.getBaseVelocity(self.Laikago)
 		return basevelocity[1]
 
 	def GetBaseLinearVelocity(self):
@@ -763,7 +780,7 @@ class Stoch2Env(gym.Env):
 		This function returns the robot base linear velocity in world frame
 		Ret: list of 3 floats
 		'''
-		basevelocity= self._pybullet_client.getBaseVelocity(self.stoch2)
+		basevelocity= self._pybullet_client.getBaseVelocity(self.Laikago)
 		return basevelocity[0]
 
 	def SetFootFriction(self, foot_friction):
@@ -774,10 +791,10 @@ class Stoch2Env(gym.Env):
 		Ret  :
 		foot_friction :  current coefficient of friction
 		'''
-		FOOT_LINK_ID = [3,8,14,19]
+		FOOT_LINK_ID = [3,7,11,15]
 		for link_id in FOOT_LINK_ID:
 			self._pybullet_client.changeDynamics(
-			self.stoch2, link_id, lateralFriction=foot_friction)
+			self.Laikago, link_id, lateralFriction=foot_friction)
 		return foot_friction
 
 	def SetWedgeFriction(self, friction):
@@ -794,7 +811,7 @@ class Stoch2Env(gym.Env):
 		function to set motor torque for respective motor_id
 		'''
 		self._pybullet_client.setJointMotorControl2(
-				  bodyIndex=self.stoch2,
+				  bodyIndex=self.Laikago,
 				  jointIndex=motor_id,
 				  controlMode=self._pybullet_client.TORQUE_CONTROL,
 				  force=torque)
@@ -805,30 +822,35 @@ class Stoch2Env(gym.Env):
 		joint_name_to_id : Dictionary of joint_name to motor_id
 		motor_id_list	 : List of joint_ids for respective motors in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA ]
 		'''
-		num_joints = self._pybullet_client.getNumJoints(self.stoch2)
+		num_joints = self._pybullet_client.getNumJoints(self.Laikago)
 		joint_name_to_id = {}
 		for i in range(num_joints):
-			joint_info = self._pybullet_client.getJointInfo(self.stoch2, i)
+			joint_info = self._pybullet_client.getJointInfo(self.Laikago, i)
 			joint_name_to_id[joint_info[1].decode("UTF-8")] = joint_info[0]
 
-		MOTOR_NAMES = [ "motor_fl_upper_hip_joint",
-						"motor_fl_upper_knee_joint",
-						"motor_fr_upper_hip_joint",
-						"motor_fr_upper_knee_joint",
-						"motor_bl_upper_hip_joint",
-						"motor_bl_upper_knee_joint",
-						"motor_br_upper_hip_joint",
-						"motor_br_upper_knee_joint",
-						"motor_front_left_abd_joint",
-						"motor_front_right_abd_joint",
-						"motor_back_left_abd_joint",
-						"motor_back_right_abd_joint"]
+			# adding abduction
+			MOTOR_NAMES = ["FL_upper_leg_2_hip_motor_joint",
+						   "FL_lower_leg_2_upper_leg_joint",
+						   "FL_hip_motor_2_chassis_joint",
+
+						   "RR_upper_leg_2_hip_motor_joint",
+						   "RR_lower_leg_2_upper_leg_joint",
+						   "RR_hip_motor_2_chassis_joint",
+
+						   "FR_upper_leg_2_hip_motor_joint",
+						   "FR_lower_leg_2_upper_leg_joint",
+						   "FR_hip_motor_2_chassis_joint",
+
+						   "RL_upper_leg_2_hip_motor_joint",
+						   "RL_lower_leg_2_upper_leg_joint",
+						   "RL_hip_motor_2_chassis_joint"
+						   ]
 
 		motor_id_list = [joint_name_to_id[motor_name] for motor_name in MOTOR_NAMES]
 
 		return joint_name_to_id, motor_id_list
 
-	def ResetLeg(self, leg_id, add_constraint, standstilltorque=10):
+	def ResetLeg(self):
 		'''
 		function to reset hip and knee joints' state
 		Args:
@@ -836,59 +858,109 @@ class Stoch2Env(gym.Env):
 			 add_constraint   : bool to create constraints in lower joints of five bar leg mechanisim
 			 standstilltorque : value of initial torque to set in hip and knee motors for standing condition
 		'''
-		leg_position = LEG_POSITION[leg_id]
 		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id["motor_" + leg_position + "upper_knee_joint"],  # motor
-			targetValue=0, targetVelocity=0)
-		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id[leg_position + "lower_knee_joint"],
-			targetValue=0, targetVelocity=0)
-		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id["motor_" + leg_position + "upper_hip_joint"],  # motor
-			targetValue=0, targetVelocity=0)
-		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id[leg_position + "lower_hip_joint"],
-			targetValue=0, targetVelocity=0)
-
-		if add_constraint:
-			c = self._pybullet_client.createConstraint(
-				self.stoch2, self._joint_name_to_id[leg_position + "lower_hip_joint"],
-				self.stoch2, self._joint_name_to_id[leg_position + "lower_knee_joint"],
-				self._pybullet_client.JOINT_POINT2POINT, [0, 0, 0],
-				KNEE_CONSTRAINT_POINT_RIGHT, KNEE_CONSTRAINT_POINT_LEFT)
-
-			self._pybullet_client.changeConstraint(c, maxForce=200)
+			self.Laikago,
+			self._joint_name_to_id["FL_upper_leg_2_hip_motor_joint"],  # motor
+			targetValue=0.67 - 0.6, targetVelocity=0)
 
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex=self.stoch2,
-			jointIndex=(self._joint_name_to_id["motor_" + leg_position + "upper_knee_joint"]),
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["FL_upper_leg_2_hip_motor_joint"]),
 			controlMode=self._pybullet_client.VELOCITY_CONTROL,
-			targetVelocity=0,
-			force=standstilltorque)
-		self._pybullet_client.setJointMotorControl2(
-			bodyIndex=self.stoch2,
-			jointIndex=(self._joint_name_to_id["motor_" + leg_position + "upper_hip_joint"]),
-			controlMode=self._pybullet_client.VELOCITY_CONTROL,
-			targetVelocity=0,
-			force=standstilltorque)
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["FR_upper_leg_2_hip_motor_joint"],
+			targetValue=0.67 - 0.6, targetVelocity=0)
 
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex=self.stoch2,
-			jointIndex=(self._joint_name_to_id[leg_position + "lower_hip_joint"]),
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["FR_upper_leg_2_hip_motor_joint"]),
 			controlMode=self._pybullet_client.VELOCITY_CONTROL,
-			targetVelocity=0,
-			force=0)
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["RL_upper_leg_2_hip_motor_joint"],  # motor
+			targetValue=0.67 - 0.6, targetVelocity=0)
 
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex=self.stoch2,
-			jointIndex=(self._joint_name_to_id[leg_position + "lower_knee_joint"]),
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["RL_upper_leg_2_hip_motor_joint"]),
 			controlMode=self._pybullet_client.VELOCITY_CONTROL,
-			targetVelocity=0,
-			force=0)
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["RR_upper_leg_2_hip_motor_joint"],
+			targetValue=0.67 - 0.6, targetVelocity=0)
+
+		self._pybullet_client.setJointMotorControl2(
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["RR_upper_leg_2_hip_motor_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["FL_lower_leg_2_upper_leg_joint"],  # motor
+			targetValue=-1.25 + 0.66, targetVelocity=0)
+
+		self._pybullet_client.setJointMotorControl2(
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["FL_lower_leg_2_upper_leg_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["FR_lower_leg_2_upper_leg_joint"],
+			targetValue=-1.25 + 0.66, targetVelocity=0)
+
+		self._pybullet_client.setJointMotorControl2(
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["FR_lower_leg_2_upper_leg_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["RL_lower_leg_2_upper_leg_joint"],  # motor
+			targetValue=-1.25 + 0.66, targetVelocity=0)
+
+		self._pybullet_client.setJointMotorControl2(
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["RL_lower_leg_2_upper_leg_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
+		)
+
+		self._pybullet_client.resetJointState(
+			self.Laikago,
+			self._joint_name_to_id["RR_lower_leg_2_upper_leg_joint"],
+			targetValue=-1.25 + 0.66, targetVelocity=0)
+
+		self._pybullet_client.setJointMotorControl2(
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["RR_lower_leg_2_upper_leg_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
+		)
 
 
 	def ResetPoseForAbd(self):
@@ -896,50 +968,50 @@ class Stoch2Env(gym.Env):
 		Reset initial conditions of abduction joints
 		'''
 		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id["motor_front_left_abd_joint"],
-			targetValue = 0, targetVelocity = 0)
+			self.Laikago,
+			self._joint_name_to_id["FL_hip_motor_2_chassis_joint"],
+			targetValue=0, targetVelocity=0)
 		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id["motor_front_right_abd_joint"],
-			targetValue = 0, targetVelocity = 0)
+			self.Laikago,
+			self._joint_name_to_id["FR_hip_motor_2_chassis_joint"],
+			targetValue=0, targetVelocity=0)
 		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id["motor_back_left_abd_joint"],
-			targetValue = 0, targetVelocity = 0)
+			self.Laikago,
+			self._joint_name_to_id["RL_hip_motor_2_chassis_joint"],
+			targetValue=0, targetVelocity=0)
 		self._pybullet_client.resetJointState(
-			self.stoch2,
-			self._joint_name_to_id["motor_back_right_abd_joint"],
-			targetValue = 0, targetVelocity = 0)
+			self.Laikago,
+			self._joint_name_to_id["RR_hip_motor_2_chassis_joint"],
+			targetValue=0, targetVelocity=0)
 
-
+		# Set control mode for each motor and initial conditions
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex = self.stoch2,
-			jointIndex = (self._joint_name_to_id["motor_front_left_abd_joint"]),
-			controlMode = self._pybullet_client.VELOCITY_CONTROL,
-			force = 0,
-			targetVelocity = 0
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["FL_hip_motor_2_chassis_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
 		)
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex = self.stoch2,
-			jointIndex = (self._joint_name_to_id["motor_front_right_abd_joint"]),
-			controlMode = self._pybullet_client.VELOCITY_CONTROL,
-			force = 0,
-			targetVelocity = 0
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["FR_hip_motor_2_chassis_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
 		)
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex = self.stoch2,
-			jointIndex = (self._joint_name_to_id["motor_back_left_abd_joint"]),
-			controlMode = self._pybullet_client.VELOCITY_CONTROL,
-			force = 0,
-			targetVelocity = 0
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["RL_hip_motor_2_chassis_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
 		)
 		self._pybullet_client.setJointMotorControl2(
-			bodyIndex = self.stoch2,
-			jointIndex = (self._joint_name_to_id["motor_back_right_abd_joint"]),
-			controlMode = self._pybullet_client.VELOCITY_CONTROL,
-			force = 0,
-			targetVelocity = 0
+			bodyIndex=self.Laikago,
+			jointIndex=(self._joint_name_to_id["RR_hip_motor_2_chassis_joint"]),
+			controlMode=self._pybullet_client.VELOCITY_CONTROL,
+			force=0,
+			targetVelocity=0
 		)
 
 

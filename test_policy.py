@@ -46,10 +46,6 @@ if __name__ == '__main__':
 		env.Set_Randomization(default=False)
 	else:
 		env.incline_deg = args.WedgeIncline
-		if(args.WedgeOrientation<0):
-			env.incline_ori_anti = False
-		else:
-			env.incline_ori_anti = True
 		env.incline_ori = math.radians(args.WedgeOrientation)
 		env.SetFootFriction(args.FrictionCoeff)
 		env.SetLinkMass(0,args.FrontMass)
@@ -58,15 +54,12 @@ if __name__ == '__main__':
 		env.pertub_steps = 300
 		env.y_f = args.PerturbForce
 	state = env.reset()
-	if(env.incline_ori_anti == True):
-		wedgeori = env.incline_ori
-	else:
-		wedgeori = -env.incline_ori
+
 
 	print (
 	bold(blue("\nTest Parameters:\n")),
 	green('\nWedge Inclination:'),red(env.incline_deg),
-	green('\nWedge Orientation:'),red(math.degrees(wedgeori)),
+	green('\nWedge Orientation:'),red(math.degrees(env.incline_ori)),
 	green('\nCoeff. of friction:'),red(env.friction),
 	green('\nMass of the front half of the body:'),red(env.FrontMass),
 	green('\nMass of the rear half of the body:'),red(env.BackMass),

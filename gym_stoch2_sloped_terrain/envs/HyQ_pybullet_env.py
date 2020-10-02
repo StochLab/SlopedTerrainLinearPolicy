@@ -1,7 +1,6 @@
-import sys, os
 import numpy as np
 import gym
-from gym import utils, spaces
+from gym import spaces
 import gym_stoch2_sloped_terrain.envs.walking_controller as walking_controller
 import math
 import random
@@ -28,7 +27,7 @@ def constrain_theta(theta):
 		theta = theta + 2*no_of_points
 	return theta
 
-class Stoch2Env(gym.Env):
+class HyQEnv(gym.Env):
 
 	def __init__(self,
 				 render = False,
@@ -109,7 +108,7 @@ class Stoch2Env(gym.Env):
 
 		self.clips = 100
 
-		self.friction = 0.7
+		self.friction = 0.9#0.7
 		self.ori_history_length = 3
 		self.ori_history_queue = deque([0]*3*self.ori_history_length, maxlen=3*self.ori_history_length) #observation queue
 
@@ -146,7 +145,7 @@ class Stoch2Env(gym.Env):
 		
 		self.hard_reset()
 
-		self.Set_Randomization(default=True, idx1=2, idx2=2)
+		self.randomize_only_inclines(default=True, idx1=2, idx2=2)
 
 		if(self._is_stairs):
 			boxHalfLength = 0.1
@@ -216,6 +215,7 @@ class Stoch2Env(gym.Env):
 		self.HyQ = self._pybullet_client.loadURDF(model_path, self.INIT_POSITION,self.INIT_ORIENTATION)
 
 		self._joint_name_to_id, self._motor_id_list  = self.BuildMotorIdList()
+
 		self.ResetLeg()
 		self.ResetPoseForAbd()
 
@@ -229,8 +229,7 @@ class Stoch2Env(gym.Env):
 
 		self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
 		self.SetFootFriction(self.friction)
-		self.SetLinkMass(0,0)
-		self.SetLinkMass(11,0)
+
 
 	def reset_standing_position(self):
 		self.ResetLeg()
