@@ -33,13 +33,13 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	policy = np.load("experiments/"+args.PolicyDir+"/iterations/best_policy.npy")
 
-	WedgePresent = True
+	WedgePresent = False
 
 	if(args.WedgeIncline == 0 or args.Stairs):
 		WedgePresent = False
 
 	env = e.Stoch2Env(render=True, wedge=WedgePresent, stairs = args.Stairs, downhill= args.Downhill, seed_value=args.seed,
-				      on_rack=False, gait = 'trot',IMU_Noise=args.AddImuNoise)
+				      on_rack=True, gait = 'trot',IMU_Noise=args.AddImuNoise)
 	steps = 0
 	t_r = 0
 	if(args.RandomTest):
@@ -64,11 +64,20 @@ if __name__ == '__main__':
 	green('\nMass of the front half of the body:'),red(env.FrontMass),
 	green('\nMass of the rear half of the body:'),red(env.BackMass),
 	green('\nMotor saturation torque:'),red(env.clips))
+	log = env._pybullet_client.startStateLogging(fileName="stoch.mp4",loggingType=env._pybullet_client.STATE_LOGGING_VIDEO_MP4)
 
 	for i_step in range(args.EpisodeLength):
 		action = policy.dot(state)
-		state, r, _, angle = env.step(action)
-		
-		t_r +=r
+		action = [1.0,1.0,1.0,1.0,
+				  1.0,1.0,1.0,1.0,
+				  0.0,0.0,0.0,0.0,
+				  0.0,0.0,0.0,0.0,
+				  0.0,0.0,0.0,0.0]
 
+		state, r, _, angle = env.step(action)
+
+
+
+		t_r +=r
+	env._pybullet_client.stopStateLogging(log)
 	print("Total_reward "+ str(t_r))

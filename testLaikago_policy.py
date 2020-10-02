@@ -7,7 +7,6 @@ import numpy as np
 import math
 PI = np.pi
 
-
 #policy to be tested 
 policy = np.load("experiments/15Sept2/iterations/best_policy.npy")
 
@@ -31,8 +30,8 @@ if __name__ == '__main__':
 	if(args.WedgeIncline == 0):
 		WedgePresent = False
 	
-	env = e.LaikagoEnv(render=True, wedge=WedgePresent, downhill=True, stairs = False,seed_value=args.seed,
-				      on_rack=True, gait = 'trot')
+	env = e.LaikagoEnv(render=True, wedge=WedgePresent, downhill=False, stairs = False,seed_value=args.seed,
+				      on_rack=False, gait = 'trot')
 	steps = 0
 	t_r = 0
 	if(args.RandomTest):
@@ -51,19 +50,24 @@ if __name__ == '__main__':
 	green('\nWedge Orientation:'),red(math.degrees(args.WedgeOrientation)),
 	green('\nCoeff. of friction:'),red(env.friction),
 	green('\nMotor saturation torque:'),red(env.clips))
-
+	#log = env._pybullet_client.startStateLogging(fileName="laikago.mp4",loggingType=env._pybullet_client.STATE_LOGGING_VIDEO_MP4)
 	for i_step in range(args.EpisodeLength):
 		print('Roll:',math.degrees(env.support_plane_estimated_roll),
 		      'Pitch:',math.degrees(env.support_plane_estimated_pitch))
 		action = policy.dot(state)
-		action = [1.0,1.0,1.0,1.0,
+
+		if(i_step%15==0):
+			env.vis_foot_traj()
+		action = [0.5,0.5,0.5,0.5,
 				  0.0,0.0,0.0,0.0,
-		
 				  0.0,0.0,0.0,0.0,
-				  -0.5,-0.5,-0.5,-0.5,
-		    	  0.0,0.0,0.0,0.0 ]
+				  0.0,0.0,0.0,0.0,
+				  
+				  0.0,0.0,0.0,0.0]
+
+
 		state, r, _, angle = env.step(action)
 		
 		t_r +=r
-
+	#env._pybullet_client.stopStateLogging(log)
 	print("Total_reward "+ str(t_r))

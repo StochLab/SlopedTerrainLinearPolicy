@@ -16,6 +16,7 @@ from collections import namedtuple
 from utils.ik_class import Stoch2Kinematics
 from utils.ik_class import LaikagoKinematics
 from utils.ik_class import HyqKinematics
+
 import numpy as np
 
 PI = np.pi
@@ -62,6 +63,7 @@ class WalkingController():
         self.leg_name_to_sol_branch_HyQ = {'fl':0, 'fr':0, 'bl':1, 'br':1}
         self.leg_name_to_dir_Laikago = {'fl': 1, 'fr': -1, 'bl': 1, 'br': -1}
         self.leg_name_to_sol_branch_Laikago = {'fl': 0, 'fr': 0, 'bl': 0, 'br': 0}
+        #self.leg_name_to_sol_branch_Laikago = {'fl': 0, 'fr': 0, 'bl': 1, 'br': 1}
 
         self.body_width = 0.24
         self.body_length = 0.37
@@ -227,8 +229,9 @@ class WalkingController():
         '''
         legs = self.initialize_leg_state(theta, action)
 
-        y_center = -0.3
-        foot_clearance = 0.1
+        ee_pts = []
+        y_center = -0.45 #-0.3
+        foot_clearance = 0.1#0.1
 
         for leg in legs:
             leg_theta = (leg.theta / (2 * no_of_points)) * 2 * PI
@@ -241,26 +244,80 @@ class WalkingController():
                 else:
                     flag = 1
                 y = foot_clearance * np.sin(leg_theta) * flag + y_center + leg.y_shift
-
+                
             leg.x, leg.y, leg.z = np.array([[np.cos(leg.phi), 0, np.sin(leg.phi)], [0, 1, 0], [-np.sin(leg.phi), 0, np.cos(leg.phi)]]) @ np.array([x, y, 0])
 
-            leg.z = leg.z + leg.z_shift
-
+            leg.z = leg.z + leg.z_shift #- 0.02
             if leg.name == "fl" or leg.name == "bl":
                 leg.z = -leg.z
+            # leg.x = 0
+            # leg.y = -0.3 #-0.7
+            # leg.z = -0.4
+            #ee_pts.append([leg.x,leg.y,leg.z])
+            body_length = 0.5 #0.717#0.8#0.717
+            body_width = 0.26 #0.414
+
+            foot_l = np.array([leg.x, leg.y, leg.z])
+
+            if (leg.name == "fl"):
+                leg_frame = [+body_length/2, 0, -body_width/2]
+
+            elif (leg.name == "fr"):
+                leg_frame = [+body_length/2, 0, +body_width/2]
+
+            elif (leg.name == "bl"):
+                leg_frame = [-body_length/2, 0, -body_width/2]
+        
+            elif (leg.name == "br"):
+                leg_frame = [-body_length/2, 0, +body_width/2]
+
+            else:
+                valid = False
+                leg_frame = [0,0,0]
+            
+            # Position of foot in body_frame
+            foot_b = foot_l + np.array(leg_frame)
+            foot_b_transform = np.array([foot_b[0],-foot_b[2], foot_b[1]])
+            ee_pts.append(foot_b_transform)
+
+            '''
+            if(leg.name == "fl" or leg.name == "bl"):
+                leg.z = leg.z + 0.1
+                
+            else:
+                leg.z = leg.z - 0.1
+
+            if(leg.name == "fl" or leg.name == "fr"):
+                leg.x = leg.x + 0.3
+                
+            else:
+                leg.x = leg.x - 0.3
+
+            ee_pts.append([leg.x,leg.z,leg.y])
+            '''
             leg.motor_knee, leg.motor_hip, leg.motor_abduction = self.Laikago_Kin.inverseKinematics(leg.x, leg.y, leg.z,self.leg_name_to_sol_branch_Laikago[leg.name])
 
             leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_Laikago[0]
             leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_Laikago[1]
             leg.motor_abduction = leg.motor_abduction * self.leg_name_to_dir_Laikago[leg.name]
 
+            
+
 
         leg_motor_angles = [legs.front_left.motor_hip, legs.front_left.motor_knee, legs.front_left.motor_abduction,
                             legs.back_right.motor_hip, legs.back_right.motor_knee, legs.back_right.motor_abduction,
                             legs.front_right.motor_hip, legs.front_right.motor_knee, legs.front_right.motor_abduction,
                             legs.back_left.motor_hip, legs.back_left.motor_knee, legs.back_left.motor_abduction]
+ 
+        leg_motor_angles = [
+            legs.front_right.motor_abduction,legs.front_right.motor_hip, legs.front_right.motor_knee,
+            legs.front_left.motor_abduction,legs.front_left.motor_hip, legs.front_left.motor_knee, 
+            legs.back_right.motor_abduction,legs.back_right.motor_hip, legs.back_right.motor_knee, 
+            legs.back_left.motor_abduction,legs.back_left.motor_hip, legs.back_left.motor_knee, ]
 
-        return leg_motor_angles
+
+
+        return leg_motor_angles,ee_pts
 
 
 
