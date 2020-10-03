@@ -52,8 +52,8 @@ if __name__ == '__main__':
 	green('\nMotor saturation torque:'),red(env.clips))
 	#log = env._pybullet_client.startStateLogging(fileName="laikago.mp4",loggingType=env._pybullet_client.STATE_LOGGING_VIDEO_MP4)
 	for i_step in range(args.EpisodeLength):
-		print('Roll:',math.degrees(env.support_plane_estimated_roll),
-		      'Pitch:',math.degrees(env.support_plane_estimated_pitch))
+		# print('Roll:',math.degrees(env.support_plane_estimated_roll),
+		#       'Pitch:',math.degrees(env.support_plane_estimated_pitch))
 		action = policy.dot(state)
 
 		if(i_step%15==0):
