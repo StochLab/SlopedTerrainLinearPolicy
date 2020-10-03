@@ -575,7 +575,7 @@ class LaikagoEnv(gym.Env):
 		all_joint_angles = self._pybullet_client.calculateInverseKinematics2(self.Laikago, [3,7,11,15], world_ee_pts, solver=0)
 
 		#print("body_ee:",body_ee_pts,"\nworld_ee:",world_ee_pts)
-		print("custom:",leg_m_angle_cmd,"\ninbuilt:",all_joint_angles)
+		#print("custom:",leg_m_angle_cmd,"\ninbuilt:",all_joint_angles)
 		leg_m_angle_cmd = all_joint_angles
 		self._theta = constrain_theta(omega * self.dt + self._theta)
 		
