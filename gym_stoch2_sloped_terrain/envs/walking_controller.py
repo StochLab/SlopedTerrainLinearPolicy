@@ -56,7 +56,7 @@ class WalkingController():
         self.gait_type = gait_type
 
         self.MOTOROFFSETS_Stoch = [2.3562,1.2217]
-        self.MOTOROFFSETS_Laikago = [0.87, 0.7]
+        self.MOTOROFFSETS_Laikago = [0.87, 0.7]#[np.pi*0.9, 0]#
         self.MOTOROFFSETS_HYQ = [1.57, 0]
 
         self.leg_name_to_sol_branch_HyQ = {'fl':0, 'fr':0, 'bl':1, 'br':1}
@@ -241,7 +241,11 @@ class WalkingController():
                 else:
                     flag = 1
                 y = foot_clearance * np.sin(leg_theta) * flag + y_center + leg.y_shift
-
+                if leg.name == "fr":
+                    x = -0.1019
+                    print("X is ", x)
+                # x = 0
+                y = -0.3
             leg.x, leg.y, leg.z = np.array([[np.cos(leg.phi), 0, np.sin(leg.phi)], [0, 1, 0], [-np.sin(leg.phi), 0, np.cos(leg.phi)]]) @ np.array([x, y, 0])
 
             leg.z = leg.z + leg.z_shift

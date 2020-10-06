@@ -153,7 +153,7 @@ class LaikagoKinematics(object):
         theta_deg1 = np.rad2deg(phi_2 - phi_1)
         theta_1 = np.deg2rad(theta_deg1)
         phi_3 = math.acos((l1 ** 2 + l2 ** 2 - r1 ** 2) / (2 * l1 * l2))
-        theta_deg2 = np.rad2deg(phi_3)
+        theta_deg2 = -np.rad2deg(phi_3)
         theta_2 = np.deg2rad(theta_deg2)
         '''
         if(sol_branch):
