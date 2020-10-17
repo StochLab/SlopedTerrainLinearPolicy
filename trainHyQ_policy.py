@@ -387,8 +387,8 @@ if __name__ == "__main__":
     phase = custom_phase
   #Custom environments that you want to use ----------------------------------------------------------------------------------------
   register(id=args.env,
-           entry_point='gym_stoch2_sloped_terrain.envs.hyq_pybullet_env:Stoch2Env',
-           kwargs = {'gait' : args.gait, 'render': False, 'action_dim': args.action_dim, 'stairs': args.stairs, 'anti_clock_ori': args.anti_clock_ori} )
+           entry_point='gym_stoch2_sloped_terrain.envs.HyQ_pybullet_env:HyQEnv',
+           kwargs = {'gait' : args.gait, 'render': False, 'action_dim': args.action_dim} )
   #---------------------------------------------------------------------------------------------------------------------------------
 
   hp = HyperParameters()
