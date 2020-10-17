@@ -3,6 +3,7 @@ import gym
 from gym import spaces
 import gym_stoch2_sloped_terrain.envs.walking_controller as walking_controller
 import math
+import time
 import random
 from collections import deque
 import pybullet
@@ -59,7 +60,7 @@ class LaikagoEnv(gym.Env):
 
 		self._theta = 0
 
-		self._frequency = 3
+		self._frequency = -1
 		self.termination_steps = end_steps
 		self.downhill = downhill
 
@@ -68,7 +69,7 @@ class LaikagoEnv(gym.Env):
 		self._kd = 50
 
 		self.dt = 0.005
-		self._frame_skip = 25
+		self._frame_skip = 25 #40 #25
 		self._n_steps = 0
 		self._action_dim = action_dim
 
@@ -380,8 +381,8 @@ class LaikagoEnv(gym.Env):
 			self.incline_ori = ori + PI/6*idx2
 			self.new_fric_val =frc[idx3]
 			self.friction = self.SetFootFriction(self.new_fric_val)
-			self.FrontMass = self.SetLinkMass(0,extra_link_mass[idx0])
-			self.BackMass = self.SetLinkMass(11,extra_link_mass[idx11])
+			#self.FrontMass = self.SetLinkMass(0,extra_link_mass[idx0])
+			#self.BackMass = self.SetLinkMass(11,extra_link_mass[idx11])
 			self.clips = cli[idxc]
 
 		else:
@@ -576,7 +577,8 @@ class LaikagoEnv(gym.Env):
 
 		#print("body_ee:",body_ee_pts,"\nworld_ee:",world_ee_pts)
 		#print("custom:",leg_m_angle_cmd,"\ninbuilt:",all_joint_angles)
-		leg_m_angle_cmd = all_joint_angles
+		
+		#leg_m_angle_cmd = all_joint_angles
 		self._theta = constrain_theta(omega * self.dt + self._theta)
 		
 		m_angle_cmd_ext = np.array(leg_m_angle_cmd)
@@ -589,6 +591,7 @@ class LaikagoEnv(gym.Env):
 			ii = ii + 1
 			applied_motor_torque = self._apply_pd_control(m_angle_cmd_ext, m_vel_cmd_ext, self._theta)
 			self._pybullet_client.stepSimulation()
+			#time.sleep(1/240.0)
 
 			if self._n_steps >=self.pertub_steps and self._n_steps <= self.pertub_steps + self.stride:
 				force_visualizing_counter += 1

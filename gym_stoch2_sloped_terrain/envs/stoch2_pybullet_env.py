@@ -278,14 +278,14 @@ class Stoch2Env(gym.Env):
 
 				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * abs(self.wedge_start)
 
-				self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
+				self.INIT_POSITION = [self.INIT_POSITION[0] +0.5, self.INIT_POSITION[1], self.robot_landing_height]
 
 			else:
 				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(self.incline_deg) + ".urdf"
 
 				self.robot_landing_height = wedge_halfheight_offset + 0.28 + math.tan(math.radians(self.incline_deg)) * 1.5
 
-				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
+				self.INIT_POSITION = [0, -1, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
 
 				self.INIT_ORIENTATION = [0, 0, 0, 1]
 

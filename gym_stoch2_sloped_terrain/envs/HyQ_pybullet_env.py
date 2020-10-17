@@ -108,7 +108,7 @@ class HyQEnv(gym.Env):
 
 		self.clips = 100
 
-		self.friction = 0.9#0.7
+		self.friction = 0.75
 		self.ori_history_length = 3
 		self.ori_history_queue = deque([0]*3*self.ori_history_length, maxlen=3*self.ori_history_length) #observation queue
 
@@ -394,18 +394,18 @@ class HyQEnv(gym.Env):
 			self.BackMass = self.SetLinkMass(11,extra_link_mass[i])
 			self.clips = np.round(np.clip(np.random.normal(6.5,0.4),5,8),2)
 
-	def randomize_only_inclines(self, default=False, idx1=0, idx2=0, deg=5, ori=0):
+	def randomize_only_inclines(self, default=False, idx1=0, idx2=0, deg=7, ori=0):
 		'''
 		This function only randomizes the wedge incline and orientation and is called during training without Domain Randomization
 		'''
 		if default:
 			self.incline_deg = deg + 2 * idx1
-			self.incline_ori = ori + PI / 6 * idx2
+			self.incline_ori = ori + PI / 12 * idx2
 
 		else:
-			avail_deg = [5, 7, 9, 11]
-			self.incline_deg = avail_deg[random.randint(0, 3)]
-			self.incline_ori = (PI / 12) * random.randint(0, 6)  # resolution of 15 degree
+			avail_deg = [7,9,11,13,15]
+			self.incline_deg = avail_deg[random.randint(0, 4)]
+			self.incline_ori = (PI / 12) * random.randint(0, 3)  # resolution of 15 degree
 
 
 	def boundYshift(self, x, y):
@@ -461,9 +461,9 @@ class HyQEnv(gym.Env):
 
 		action[8:12] = (action[8:12] + 1) / 2  				# el1ipse center y is positive always
 
-		action[8:16] = self.getYXshift(action[8:16]) * 2
+		action[8:16] = self.getYXshift(action[8:16]) * 3
 
-		action[16:20] = action[16:20] * 0.035 * 2
+		action[16:20] = action[16:20] * 0.035 * 4
 		action[17] = -action[17]
 		action[19] = -action[19]
 		return action
@@ -619,7 +619,7 @@ class HyQEnv(gym.Env):
 				print('Oops, Robot doing wheely! Terminated')
 				done = True
 
-			if pos[2] > 0.7:
+			if pos[2] > 0.9:
 				print('Robot was too high! Terminated')
 				done = True
 
@@ -634,7 +634,7 @@ class HyQEnv(gym.Env):
 			
 		'''
 		wedge_angle = self.incline_deg*PI/180
-		robot_height_from_support_plane = 0.243	
+		robot_height_from_support_plane = 0.65	
 		pos, ori = self.GetBasePosAndOrientation()
 
 		RPY_orig = self._pybullet_client.getEulerFromQuaternion(ori)
@@ -652,20 +652,27 @@ class HyQEnv(gym.Env):
 		pitch_reward = np.exp(-45 * ((RPY[1]-self.support_plane_estimated_pitch) ** 2))
 		yaw_reward = np.exp(-35 * (RPY[2] ** 2))
 		height_reward = np.exp(-800 * (desired_height - current_height) ** 2)
+	
 
 		x = pos[0]
+		y = pos[1]
 		x_l = self._last_base_position[0]
+		y_l = self._last_base_position[1]
 		self._last_base_position = pos
 
 		step_distance_x = (x - x_l)
+		step_distance_y = abs(y - y_l)
+
 
 		done = self._termination(pos, ori)
 		if done:
 			reward = 0
 		else:
 			reward = round(yaw_reward, 4) + round(pitch_reward, 4) + round(roll_reward, 4)\
-					 + round(height_reward,4) + 100 * round(step_distance_x, 4)
+					 + round(height_reward,4) + 200 * round(step_distance_x, 4)\
+					 - 100 * round(step_distance_y, 4)
 
+			
 			'''
 			#Penalize for standing at same position for continuous 150 steps
 			self.step_disp.append(step_distance_x)

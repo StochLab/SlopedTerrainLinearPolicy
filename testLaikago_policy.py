@@ -31,7 +31,7 @@ if __name__ == '__main__':
 		WedgePresent = False
 	
 	env = e.LaikagoEnv(render=True, wedge=WedgePresent, downhill=False, stairs = False,seed_value=args.seed,
-				      on_rack=False, gait = 'trot')
+				      on_rack=True, gait = 'trot')
 	steps = 0
 	t_r = 0
 	if(args.RandomTest):

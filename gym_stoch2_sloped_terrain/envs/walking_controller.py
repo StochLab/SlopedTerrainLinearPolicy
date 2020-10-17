@@ -250,12 +250,14 @@ class WalkingController():
             leg.z = leg.z + leg.z_shift #- 0.02
             if leg.name == "fl" or leg.name == "bl":
                 leg.z = -leg.z
-            # leg.x = 0
-            # leg.y = -0.3 #-0.7
-            # leg.z = -0.4
+            #if leg.name == 'fl':
+                # leg.x = 0.14
+                # leg.y = -0.65
+                # leg.z = 0
+
             #ee_pts.append([leg.x,leg.y,leg.z])
             body_length = 0.5 #0.717#0.8#0.717
-            body_width = 0.26 #0.414
+            body_width = 0.3 #0.414
 
             foot_l = np.array([leg.x, leg.y, leg.z])
 

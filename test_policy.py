@@ -19,12 +19,12 @@ if __name__ == '__main__':
 	parser.add_argument('--FrontMass', help='mass to be added in the first', type=float, default=0)
 	parser.add_argument('--BackMass', help='mass to be added in the back', type=float, default=0)
 	parser.add_argument('--FrictionCoeff', help='foot friction value to be set', type=float, default=0.6)
-	parser.add_argument('--WedgeIncline', help='wedge incline degree of the wedge', type=int, default=7)
-	parser.add_argument('--WedgeOrientation', help='wedge orientation degree of the wedge', type=float, default=-45)
+	parser.add_argument('--WedgeIncline', help='wedge incline degree of the wedge', type=int, default=9)
+	parser.add_argument('--WedgeOrientation', help='wedge orientation degree of the wedge', type=float, default=90)
 	parser.add_argument('--MotorStrength', help='maximum motor Strength to be applied', type=float, default=7.0)
 	parser.add_argument('--RandomTest', help='flag to sample test values randomly ', type=bool, default=False)
 	parser.add_argument('--seed', help='seed for the random sampling', type=float, default=100)
-	parser.add_argument('--EpisodeLength', help='number of gait steps of a episode', type=int, default=1000)
+	parser.add_argument('--EpisodeLength', help='number of gait steps of a episode', type=int, default=400)
 	parser.add_argument('--PerturbForce', help='perturbation force to applied perpendicular to the heading direction of the robot', type=float, default=0.0)
 	parser.add_argument('--Downhill', help='should robot walk downhill?', type=bool, default=False)
 	parser.add_argument('--Stairs', help='test on staircase', type=bool, default=False)
@@ -33,13 +33,13 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	policy = np.load("experiments/"+args.PolicyDir+"/iterations/best_policy.npy")
 
-	WedgePresent = False
+	WedgePresent = True
 
 	if(args.WedgeIncline == 0 or args.Stairs):
 		WedgePresent = False
 
 	env = e.Stoch2Env(render=True, wedge=WedgePresent, stairs = args.Stairs, downhill= args.Downhill, seed_value=args.seed,
-				      on_rack=True, gait = 'trot',IMU_Noise=args.AddImuNoise)
+				      on_rack=False, gait = 'trot',IMU_Noise=args.AddImuNoise)
 	steps = 0
 	t_r = 0
 	if(args.RandomTest):
@@ -64,15 +64,16 @@ if __name__ == '__main__':
 	green('\nMass of the front half of the body:'),red(env.FrontMass),
 	green('\nMass of the rear half of the body:'),red(env.BackMass),
 	green('\nMotor saturation torque:'),red(env.clips))
-	log = env._pybullet_client.startStateLogging(fileName="stoch.mp4",loggingType=env._pybullet_client.STATE_LOGGING_VIDEO_MP4)
+	log = env._pybullet_client.startStateLogging(fileName="stochsidehill.mp4",loggingType=env._pybullet_client.STATE_LOGGING_VIDEO_MP4)
 
+	env._pybullet_client.resetDebugVisualizerCamera(1, 90, -20, [1, 0, 0])
 	for i_step in range(args.EpisodeLength):
 		action = policy.dot(state)
-		action = [1.0,1.0,1.0,1.0,
-				  1.0,1.0,1.0,1.0,
-				  0.0,0.0,0.0,0.0,
-				  0.0,0.0,0.0,0.0,
-				  0.0,0.0,0.0,0.0]
+		# action = [1.0,1.0,1.0,1.0,
+		# 		  1.0,1.0,1.0,1.0,
+		# 		  0.0,0.0,0.0,0.0,
+		# 		  0.0,0.0,0.0,0.0,
+		# 		  0.0,0.0,0.0,0.0]
 
 		state, r, _, angle = env.step(action)
 
