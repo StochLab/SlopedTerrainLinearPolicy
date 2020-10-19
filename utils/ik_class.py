@@ -146,7 +146,7 @@ class LaikagoKinematics(object):
         sol_branch = br
         t1 = (-4*l2*y + np.sqrt(16*l2**2*y**2 - 4*(-l1**2 + l2**2 - 2*l2*x + x**2 + y**2)*(-l1**2 + l2**2 + 2*l2*x + x**2 + y**2)))/(2.*(l1**2 - l2**2 - 2*l2*x - x**2 - y**2))
         t2 = (-4*l2*y - np.sqrt(16*l2**2*y**2 - 4*(-l1**2 + l2**2 - 2*l2*x + x**2 + y**2)*(-l1**2 + l2**2 + 2*l2*x + x**2 + y**2)))/(2.*(l1**2 - l2**2 - 2*l2*x - x**2 - y**2))
-        
+
         if(sol_branch):
             t = t2
         else:
@@ -155,6 +155,7 @@ class LaikagoKinematics(object):
         th1 = np.arctan2(y - l2*np.sin(th12), x - l2*np.cos(th12))
         th2 = th12 - th1
         return [th1,th2]
+        #return [theta_1,theta_2]
 
     def inverseKinematics(self, x,y,z,br):
         '''

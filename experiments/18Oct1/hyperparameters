@@ -7,5 +7,5 @@ Normal initialization: 1
 Gait: trot
 Incline_Orientaion_Anti-Clockwise: True
 domain_Randomization: 0
-Curriculmn introduced at iteration: 40
+Curriculmn introduced at iteration: 10
 Training with tStrut IP without DR
