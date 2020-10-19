@@ -183,7 +183,7 @@ class LaikagoKinematics(object):
 		-- x : End-effector position
 		'''
         l1 = 0.25
-        l2 = 0.25 
+        l2 = 0.25
         x = l1 * math.cos(q[0]) + l2 * math.cos(q[0]+q[1])
         y = l1 * math.sin(q[0]) + l2 * math.sin(q[0]+q[1])
         return [x,y]

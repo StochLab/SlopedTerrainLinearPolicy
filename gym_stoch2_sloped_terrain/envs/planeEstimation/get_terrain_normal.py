@@ -118,7 +118,6 @@ def legFrame_to_BodyFrame_Laikago(leg_id, hip_angle, knee_angle, abd_angle):
     if (valid == False):
         return False, [0, 0, 0]
 
-    y_l = y_l + 0.035
     x_leg = x_l
     y_leg = y_l * np.cos(abd_angle)
     z_leg = -y_l * np.sin(abd_angle)
