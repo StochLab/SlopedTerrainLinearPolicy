@@ -669,8 +669,8 @@ class HyQEnv(gym.Env):
 			reward = 0
 		else:
 			reward = round(yaw_reward, 4) + round(pitch_reward, 4) + round(roll_reward, 4)\
-					 + round(height_reward,4) + 200 * round(step_distance_x, 4)\
-					 - 100 * round(step_distance_y, 4)
+					 + round(height_reward,4) + 200 * round(step_distance_x, 4)
+					# - 100 * round(step_distance_y, 4)
 
 			
 			'''
@@ -694,7 +694,7 @@ class HyQEnv(gym.Env):
 		qvel_act = self.GetMotorVelocities()
 		applied_motor_torque = self._kp * (motor_commands - qpos_act) + self._kd * (motor_vel_commands - qvel_act)
 
-		motor_strength = 100
+		motor_strength = 200
 		applied_motor_torque = np.clip(np.array(applied_motor_torque), -motor_strength, motor_strength)
 		applied_motor_torque = applied_motor_torque.tolist()
 
