@@ -650,7 +650,7 @@ class HyQEnv(gym.Env):
 
 		roll_reward = np.exp(-45 * ((RPY[0]-self.support_plane_estimated_roll) ** 2))
 		pitch_reward = np.exp(-45 * ((RPY[1]-self.support_plane_estimated_pitch) ** 2))
-		yaw_reward = np.exp(-35 * (RPY[2] ** 2))
+		yaw_reward = np.exp(-40 * (RPY[2] ** 2))
 		height_reward = np.exp(-800 * (desired_height - current_height) ** 2)
 	
 
@@ -669,8 +669,7 @@ class HyQEnv(gym.Env):
 			reward = 0
 		else:
 			reward = round(yaw_reward, 4) + round(pitch_reward, 4) + round(roll_reward, 4)\
-					 + round(height_reward,4) + 200 * round(step_distance_x, 4)
-					# - 100 * round(step_distance_y, 4)
+					 + round(height_reward,4) + 100 * round(step_distance_x, 4) - 20 * round(step_distance_y, 4)
 
 			
 			'''
