@@ -227,7 +227,7 @@ class WalkingController():
         '''
         legs = self.initialize_leg_state(theta, action)
 
-        y_center = -0.3
+        y_center = -0.35
         foot_clearance = 0.1
 
         for leg in legs:
@@ -241,11 +241,11 @@ class WalkingController():
                 else:
                     flag = 1
                 y = foot_clearance * np.sin(leg_theta) * flag + y_center + leg.y_shift
-                if leg.name == "fr":
-                    x = -0.1019
-                    print("X is ", x)
-                # x = 0
-                y = -0.3
+                # if leg.name == "fr":
+                #     x = -0.1019
+                #     print("X is ", x)
+                # # x = 0
+                # y = -0.3
             leg.x, leg.y, leg.z = np.array([[np.cos(leg.phi), 0, np.sin(leg.phi)], [0, 1, 0], [-np.sin(leg.phi), 0, np.cos(leg.phi)]]) @ np.array([x, y, 0])
 
             leg.z = leg.z + leg.z_shift

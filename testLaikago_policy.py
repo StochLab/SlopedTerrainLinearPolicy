@@ -27,12 +27,12 @@ if __name__ == '__main__':
 	parser.add_argument('--EpisodeLength', help='number of gait steps of a episode', type=int, default=80000)
 
 	args = parser.parse_args()
-	WedgePresent = False
+	WedgePresent = True
 	if(args.WedgeIncline == 0):
 		WedgePresent = False
 	
-	env = e.LaikagoEnv(render=True, wedge=WedgePresent, downhill=True, stairs = False,seed_value=args.seed,
-				      on_rack=True, gait = 'trot')
+	env = e.LaikagoEnv(render=True, wedge=WedgePresent, downhill=False, stairs = False,seed_value=args.seed,
+				      on_rack=False, gait = 'trot')
 	steps = 0
 	t_r = 0
 	if(args.RandomTest):
@@ -56,12 +56,10 @@ if __name__ == '__main__':
 		print('Roll:',math.degrees(env.support_plane_estimated_roll),
 		      'Pitch:',math.degrees(env.support_plane_estimated_pitch))
 		action = policy.dot(state)
-		action = [1.0,1.0,1.0,1.0,
+		action = [0.5,0.5,0.5,0.5,
 				  0.0,0.0,0.0,0.0,
-		
-				  0.0,0.0,0.0,0.0,
-				  0.0,0.0,0.0,0.0,
-
+				  -1,-1,-1,-1,
+				  -1, -1, -1, -1,
 		    	  0.0,0.0,0.0,0.0 ]
 		state, r, _, angle = env.step(action)
 		

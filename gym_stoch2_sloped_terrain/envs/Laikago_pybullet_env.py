@@ -200,7 +200,7 @@ class LaikagoEnv(gym.Env):
 				wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(
 					self.incline_deg) + ".urdf"
 
-				self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(math.radians(self.incline_deg)) * 1.5
+				self.robot_landing_height = wedge_halfheight_offset + 0.5 + math.tan(math.radians(self.incline_deg)) * 1.5
 
 				self.INIT_POSITION = [0, 0, self.robot_landing_height]  # [0.5, 0.7, 0.3] #[-0.5,-0.5,0.3]
 
@@ -690,8 +690,13 @@ class LaikagoEnv(gym.Env):
 		qvel_act = self.GetMotorVelocities()
 		applied_motor_torque = np.zeros(12)
 		if theta > 100:
-			kp1 = 220
-			kd1 = 20
+			# kp1 = 220
+			# kd1 = 20
+			# kp2 = 500
+			# kd2 = 50
+
+			kp1 = 1500
+			kd1 = 80
 			kp2 = 500
 			kd2 = 50
 			applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
@@ -700,17 +705,22 @@ class LaikagoEnv(gym.Env):
 										 (motor_vel_commands[6:12] - qvel_act[6:12])
 
 		else:
+			# kp1 = 500
+			# kd1 = 50
+			# kp2 = 220
+			# kd2 = 20
+
 			kp1 = 500
 			kd1 = 50
-			kp2 = 220
-			kd2 = 20
+			kp2 = 1500
+			kd2 = 80
 
 			applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
 										(motor_vel_commands[0:6] - qvel_act[0:6])
 			applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
 										 (motor_vel_commands[6:12] - qvel_act[6:12])
 
-		self.clips = 60
+		self.clips = 150
 		applied_motor_torque = np.clip(np.array(applied_motor_torque), -self.clips, self.clips)
 
 		applied_motor_torque = applied_motor_torque.tolist()
