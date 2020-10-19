@@ -1,5 +1,6 @@
 import numpy as np
-import gym_stoch2_sloped_terrain.envs.stoch2_pybullet_env as e
+#import gym_stoch2_sloped_terrain.envs.stoch2_pybullet_env as e
+import gym_stoch2_sloped_terrain.envs.HyQ_pybullet_env as e
 import argparse
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
@@ -9,47 +10,41 @@ if(__name__ == "__main__"):
 
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	
-	parser.add_argument('--policyName', help='file name of the initial policy', type=str, default='initial_policy_test')
+	parser.add_argument('--policyName', help='file name of the initial policy', type=str, default='initial_policy_HyQ')
 	args = parser.parse_args()	
-	env = e.Stoch2Env(render=True, wedge = True, stairs = False,on_rack=False, gait = 'trot', collect_data = False , randomization= 0)
+	env = e.HyQEnv(render=True, wedge = True, stairs = False,on_rack=False)
 
 	tuned_actions= np.array([[0.5,0.5,0.5,0.5,
-                        0,0,0,0,
-                       -1,-1,-1,-1,
-                       -1,-1,-1,-1,
-                        0, 0, 0, 0],
-					  [0.5,0.5,0.5,0.5,
-                        0,0,0,0,
-                       -1,-1,-1,-1,
-                        0,0,0,0,
-                        1, 1, 1, 1],
-					  [0.5,0.5,0.5,0.5,
-                        0,0,0,0,
-                       -1,-1,-1,-1,
-                       -0.5,-0.5,-0.5,-0.5,
-                        0.5, 0.5, 0.5, 0.5]
+                              0.0,0.0,0.0,0.0,
+                             -1.0,-1.0,-1.0,-1.0,
+                             -1.0,-1.0,-1.0,-1.0,
+                              0.0, 0.0, 0.0, 0.0],
+
+					          [0.5,0.5,0.5,0.5,
+                               0.0,0.0,0.0,0.0,
+                              -1.0,-1.0,-1.0,-1.0,
+                              -0.5,-0.5,-0.5,-0.5,
+                               0.5, 0.5, 0.5, 0.5]
 					  ])
 
 	# NUmber of steps per episode
-	num_of_steps = 50
+	num_of_steps = 500
 
 	# list that tracks the states and actions
 	states = []
 	actions = []
 	do_supervised_learning = True
 
-	
-	idx1 = [3]
-	idx2 = [0,3,2]
-	idx3 = [1]
+	#for HyQ	
+	idx1 = [2]
+	idx2 = [0,3]
+
 	experiment_counter = 0
 	
 	for i in idx1:
 		for j in idx2:
-			for k in idx3:
 				t_r = 0
-
-				env.Set_Randomization(default=True,idx1 = i,idx2=j,idx3=k,idx0=0,idx11=0)
+				env.randomize_only_inclines(default=True, idx1=i, idx2=j)
 				#print("incline:",env.incline_deg)
 
 				cstate = env.reset()

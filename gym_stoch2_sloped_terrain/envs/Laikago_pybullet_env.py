@@ -3,6 +3,7 @@ import gym
 from gym import spaces
 import gym_stoch2_sloped_terrain.envs.walking_controller as walking_controller
 import math
+import time
 import random
 from collections import deque
 import pybullet
@@ -59,7 +60,7 @@ class LaikagoEnv(gym.Env):
 
 		self._theta = 0
 
-		self._frequency = -3
+		self._frequency = -1
 		self.termination_steps = end_steps
 		self.downhill = downhill
 
@@ -68,7 +69,7 @@ class LaikagoEnv(gym.Env):
 		self._kd = 50
 
 		self.dt = 0.005
-		self._frame_skip = 25
+		self._frame_skip = 25 #40 #25
 		self._n_steps = 0
 		self._action_dim = action_dim
 
@@ -102,7 +103,7 @@ class LaikagoEnv(gym.Env):
 		self.linearV = 0
 		self.angV = 0
 		self.prev_vel=[0,0,0]
-
+		self.prev_feet_points = np.ndarray((5,3))
 		self.x_f = 0
 		self.y_f = 0
 
@@ -289,7 +290,14 @@ class LaikagoEnv(gym.Env):
 		self._pybullet_client.resetBasePositionAndOrientation(self.Laikago, self.INIT_POSITION, self.INIT_ORIENTATION)
 		self._pybullet_client.resetBaseVelocity(self.Laikago, [0, 0, 0], [0, 0, 0])
 		self.reset_standing_position()
-
+		LINK_ID = [0,3,7,11,15]
+		i=0
+		for  link_id in LINK_ID:
+			if(link_id!=0):
+				self.prev_feet_points[i] = np.array(self._pybullet_client.getLinkState(self.Laikago,link_id)[0])
+			else:
+				self.prev_feet_points[i] = np.array(self.GetBasePosAndOrientation()[0])
+			i+=1
 		self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
 		self._n_steps = 0
 		return self.GetObservation()
@@ -373,8 +381,8 @@ class LaikagoEnv(gym.Env):
 			self.incline_ori = ori + PI/6*idx2
 			self.new_fric_val =frc[idx3]
 			self.friction = self.SetFootFriction(self.new_fric_val)
-			self.FrontMass = self.SetLinkMass(0,extra_link_mass[idx0])
-			self.BackMass = self.SetLinkMass(11,extra_link_mass[idx11])
+			#self.FrontMass = self.SetLinkMass(0,extra_link_mass[idx0])
+			#self.BackMass = self.SetLinkMass(11,extra_link_mass[idx11])
 			self.clips = cli[idxc]
 
 		else:
@@ -456,20 +464,38 @@ class LaikagoEnv(gym.Env):
 
 		action[:4] = (action[:4] + 1) / 2  # Step lengths are positive always
 
-		action[:4] = action[:4] * 3 * 0.068  # Max steplength = 2x0.068
+		action[:4] = action[:4] * 4 * 0.068  # Max steplength = 2x0.068
 
 		action[4:8] = action[4:8] * PI / 2  # PHI can be [-pi/2, pi/2]
 
-		#action[8:12] = (action[8:12] + 1) / 2  # el1ipse center y is positive always
-		action[8:12] = 0.07*(action[8:12] + 1) / 2  # el1ipse center y is positive always
+		action[8:12] = (action[8:12] + 1) / 2  # el1ipse center y is positive always
+		#action[8:12] =   # el1ipse center y is positive always
 
-		#action[8:16] = self.getYXshift(action[8:16]) * 2.5  # * 0.1 / 0.068
+		action[8:16] = self.getYXshift(action[8:16]) * 2.5  # * 0.1 / 0.068
 
-		action[12:16] = -1 * 0.1 * action[12:16]
-		action[16:20] = action[16:20] * 0.035 * 2.5  # * 0.1 / 0.068  # ellipse in and out
+		#action[12:16] = -1 * action[12:16]
+
+		action[16:20] =-1* action[16:20] * 0.035 * 2.5  # * 0.1 / 0.068  # ellipse in and out
+		
 		action[16] = -action[16]
 		action[18] = -action[18]
 		return action
+
+
+	def vis_foot_traj(self,line_thickness = 5,life_time = 15):
+		LINK_ID = [0,3,7,11,15]
+		i=0
+		for  link_id in LINK_ID:
+			if(link_id!=0):
+				current_point = self._pybullet_client.getLinkState(self.Laikago,link_id)[0]
+				self._pybullet_client.addUserDebugLine(current_point,self.prev_feet_points[i],[1,0,0],line_thickness,lifeTime=life_time)
+			else:
+				current_point = self.GetBasePosAndOrientation()[0]
+				self._pybullet_client.addUserDebugLine(current_point,self.prev_feet_points[i],[0,1,0],line_thickness,lifeTime=life_time)
+			
+			self.prev_feet_points[i] = current_point
+			i+=1
+
 
 	def get_foot_contacts(self):
 		'''
@@ -541,8 +567,18 @@ class LaikagoEnv(gym.Env):
 		self.action = action
 		ii = 0
 
-		leg_m_angle_cmd = self._walkcon.run_elliptical_Traj_Laikago(self._theta,action)
+		leg_m_angle_cmd,body_ee_pts = self._walkcon.run_elliptical_Traj_Laikago(self._theta,action)
+		base_position, base_orientation = self._pybullet_client.getBasePositionAndOrientation(self.Laikago)
+		world_ee_pts = []
+		for i in body_ee_pts:
+			pos, _ = self._pybullet_client.multiplyTransforms(base_position, base_orientation, i, [0,0,0,1])
+			world_ee_pts.append(pos)
+		all_joint_angles = self._pybullet_client.calculateInverseKinematics2(self.Laikago, [3,7,11,15], world_ee_pts, solver=0)
 
+		#print("body_ee:",body_ee_pts,"\nworld_ee:",world_ee_pts)
+		#print("custom:",leg_m_angle_cmd,"\ninbuilt:",all_joint_angles)
+		
+		#leg_m_angle_cmd = all_joint_angles
 		self._theta = constrain_theta(omega * self.dt + self._theta)
 		
 		m_angle_cmd_ext = np.array(leg_m_angle_cmd)
@@ -555,6 +591,7 @@ class LaikagoEnv(gym.Env):
 			ii = ii + 1
 			applied_motor_torque = self._apply_pd_control(m_angle_cmd_ext, m_vel_cmd_ext, self._theta)
 			self._pybullet_client.stepSimulation()
+			#time.sleep(1/240.0)
 
 			if self._n_steps >=self.pertub_steps and self._n_steps <= self.pertub_steps + self.stride:
 				force_visualizing_counter += 1
@@ -829,21 +866,23 @@ class LaikagoEnv(gym.Env):
 			joint_name_to_id[joint_info[1].decode("UTF-8")] = joint_info[0]
 
 			# adding abduction
-			MOTOR_NAMES = ["FL_upper_leg_2_hip_motor_joint",
-						   "FL_lower_leg_2_upper_leg_joint",
-						   "FL_hip_motor_2_chassis_joint",
-
-						   "RR_upper_leg_2_hip_motor_joint",
-						   "RR_lower_leg_2_upper_leg_joint",
-						   "RR_hip_motor_2_chassis_joint",
-
+			MOTOR_NAMES = [
+						   "FR_hip_motor_2_chassis_joint",
 						   "FR_upper_leg_2_hip_motor_joint",
 						   "FR_lower_leg_2_upper_leg_joint",
-						   "FR_hip_motor_2_chassis_joint",
 
+						   "FL_hip_motor_2_chassis_joint",
+						   "FL_upper_leg_2_hip_motor_joint",
+						   "FL_lower_leg_2_upper_leg_joint",
+
+						   "RR_hip_motor_2_chassis_joint",
+						   "RR_upper_leg_2_hip_motor_joint",
+						   "RR_lower_leg_2_upper_leg_joint",
+
+						   "RL_hip_motor_2_chassis_joint",
 						   "RL_upper_leg_2_hip_motor_joint",
-						   "RL_lower_leg_2_upper_leg_joint",
-						   "RL_hip_motor_2_chassis_joint"
+						   "RL_lower_leg_2_upper_leg_joint"
+
 						   ]
 
 		motor_id_list = [joint_name_to_id[motor_name] for motor_name in MOTOR_NAMES]
