@@ -1,6 +1,4 @@
 import sys, os
-
-
 import inspect
 
 # Importing the libraries
@@ -127,7 +125,7 @@ class Policy():
 
   def __init__(self, input_size, output_size, env_name, normal, args):
     try:
-      print("Training from guided policy")
+      print("Training from guided policy,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
       self.theta = np.load(args.policy)
     except:
       print("Training from random policy")
@@ -362,7 +360,7 @@ if __name__ == "__main__":
   parser.add_argument('--stairs', help='add stairs to the bezier environment', type=int, default=0)
   parser.add_argument('--action_dim', help='degree of the spline polynomial used in the training', type=int, default=20)
   parser.add_argument('--directions', help='divising factor of total directions to use', type=int, default=2)
-  parser.add_argument('--curi_learn', help='after how many iteration steps second stage of curriculum learning should start', type=int, default=40)
+  parser.add_argument('--curi_learn', help='after how many iteration steps second stage of curriculum learning should start', type=int, default=10)
   parser.add_argument('--eval_step', help='policy evaluation after how many steps should take place', type=int, default=3)
   parser.add_argument('--domain_Rand', help='add domain randomization', type=int, default=1)
   parser.add_argument('--anti_clock_ori', help='rotate the inclines anti-clockwise', type=bool, default=True)
@@ -415,7 +413,7 @@ if __name__ == "__main__":
   print("log dir", args.logdir)
   hp.logdir =args.logdir
   np.random.seed(hp.seed)
-  max_processes = 15
+  max_processes = 20
   parentPipes = None
   if args.mp:
     num_processes = min([hp.nb_directions, max_processes])
