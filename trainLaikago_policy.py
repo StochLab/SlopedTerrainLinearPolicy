@@ -213,7 +213,7 @@ def policyevaluation(env, policy, hp):
     else:
         # Evaluation Dataset without domain randomization
         # --------------------------------------------------------------
-        incline_deg_range = [2, 3, 4]  # 11, 13
+        incline_deg_range = [2, 3]  # 11, 13
         incline_ori_range = [0, 2, 3]  # 0, 30, 45 degree
         # --------------------------------------------------------------
         total_combinations = len(incline_deg_range) * len(incline_ori_range)
