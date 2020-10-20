@@ -12,7 +12,7 @@ if(__name__ == "__main__"):
 
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	
-	parser.add_argument('--policyName', help='file name of the initial policy', type=str, default='initial_policy_Laikago')
+	parser.add_argument('--policyName', help='file name of the initial policy', type=str, default='initial_policy_Laikago2')
 	args = parser.parse_args()	
 	env = e.LaikagoEnv(render=True, wedge = True, stairs = False,on_rack=False)
 
@@ -24,7 +24,7 @@ if(__name__ == "__main__"):
                              -1.0,-1.0,-1.0,-1.0,
                               0.0, 0.0, 0.0, 0.0],
 
-					          [0.5,0.5,0.5,0.5,
+					          [1.0,1.0,1.0,1.0,
                                0.0,0.0,0.0,0.0,
                               -1.0,-1.0,-1.0,-1.0,
                               -0.5,-0.5,-0.5,-0.5,

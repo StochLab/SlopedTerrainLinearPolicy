@@ -119,7 +119,7 @@ class LaikagoEnv(gym.Env):
         self.incline_ori = 0
 
         self.prev_incline_vec = (0, 0, 1)
-
+        self.prev_feet_points = np.ndarray((5,3))
         self.terrain_pitch = []
         self.add_IMU_noise = IMU_Noise
 
@@ -271,7 +271,7 @@ class LaikagoEnv(gym.Env):
                     [math.radians(self.incline_deg) * math.sin(self.incline_ori),
                      -math.radians(self.incline_deg) * math.cos(self.incline_ori), 0])
 
-                self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(
+                self.robot_landing_height = wedge_halfheight_offset + 0.5 + math.tan(
                     math.radians(self.incline_deg)) * abs(self.wedge_start)
 
                 self.INIT_POSITION = [self.INIT_POSITION[0], self.INIT_POSITION[1], self.robot_landing_height]
@@ -280,7 +280,7 @@ class LaikagoEnv(gym.Env):
                 wedge_model_path = "gym_stoch2_sloped_terrain/envs/Wedges/downhill/urdf/wedge_" + str(
                     self.incline_deg) + ".urdf"
 
-                self.robot_landing_height = wedge_halfheight_offset + 0.65 + math.tan(
+                self.robot_landing_height = wedge_halfheight_offset + 0.5 + math.tan(
                     math.radians(self.incline_deg)) * 1.5
 
                 self.INIT_POSITION = [0.3, 0, self.robot_landing_height]
@@ -293,7 +293,14 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetBasePositionAndOrientation(self.Laikago, self.INIT_POSITION, self.INIT_ORIENTATION)
         self._pybullet_client.resetBaseVelocity(self.Laikago, [0, 0, 0], [0, 0, 0])
         self.reset_standing_position()
-
+        LINK_ID = [0,3,7,11,15]
+        i=0
+        for  link_id in LINK_ID:
+            if(link_id!=0):
+                self.prev_feet_points[i] = np.array(self._pybullet_client.getLinkState(self.Laikago,link_id)[0])
+            else:
+                self.prev_feet_points[i] = np.array(self.GetBasePosAndOrientation()[0])
+            i+=1
         self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
         self._n_steps = 0
         return self.GetObservation()
@@ -465,7 +472,7 @@ class LaikagoEnv(gym.Env):
 
         # action[8:16] = self.getYXshift(action[8:16]) * 2.5  # * 0.1 / 0.068
 
-        action[12:16] = -1 * 0.08 * action[12:16]
+        action[12:16] = -1 * 0.06 * action[12:16]
         action[16:20] = action[16:20] * 0.035 * 3.5  # * 0.1 / 0.068  # ellipse in and out
         action[16] = -action[16]
         action[18] = -action[18]
@@ -681,6 +688,23 @@ class LaikagoEnv(gym.Env):
             '''
 
         return reward, done
+    def vis_foot_traj(self,line_thickness = 5,life_time = 15):
+        LINK_ID = [0,3,7,11,15]
+        i=0
+        for  link_id in LINK_ID:
+            if(link_id!=0):
+                current_point = self._pybullet_client.getLinkState(self.Laikago,link_id)[0]
+                self._pybullet_client.addUserDebugLine(current_point,self.prev_feet_points[i],[1,0,0],line_thickness,lifeTime=life_time)
+            else:
+                current_point = self.GetBasePosAndOrientation()[0]
+                #self._pybullet_client.addUserDebugLine(current_point,self.prev_feet_points[i],[0,0,1],line_thickness,lifeTime=100)
+            self.prev_feet_points[i] = current_point
+            i+=1
+
+
+
+
+
 
     def _apply_pd_control(self, motor_commands, motor_vel_commands, theta):
         '''
@@ -691,35 +715,25 @@ class LaikagoEnv(gym.Env):
         qpos_act = self.GetMotorAngles()
         qvel_act = self.GetMotorVelocities()
         applied_motor_torque = np.zeros(12)
-        if theta > 100:
-            # kp1 = 220
-            # kd1 = 20
-            # kp2 = 500
-            # kd2 = 50
 
-            kp1 = 1500
-            kd1 = 80
-            kp2 = 500
-            kd2 = 50
-            applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
+        kp_swing = 1000 #1500 #220
+        kd_swing = 80 #20
+        kp_stance = 500
+        kd_stance = 50
+        
+        
+        if theta > 100:
+
+            applied_motor_torque[0:6] = kp_swing * (motor_commands[0:6] - qpos_act[0:6]) + kd_swing * \
                                         (motor_vel_commands[0:6] - qvel_act[0:6])
-            applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
+            applied_motor_torque[6:12] = kp_stance * (motor_commands[6:12] - qpos_act[6:12]) + kd_stance * \
                                          (motor_vel_commands[6:12] - qvel_act[6:12])
 
         else:
-            # kp1 = 500
-            # kd1 = 50
-            # kp2 = 220
-            # kd2 = 20
 
-            kp1 = 500
-            kd1 = 50
-            kp2 = 1500
-            kd2 = 80
-
-            applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
+            applied_motor_torque[0:6] = kp_stance * (motor_commands[0:6] - qpos_act[0:6]) + kd_stance * \
                                         (motor_vel_commands[0:6] - qvel_act[0:6])
-            applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
+            applied_motor_torque[6:12] = kp_swing * (motor_commands[6:12] - qpos_act[6:12]) + kd_swing * \
                                          (motor_vel_commands[6:12] - qvel_act[6:12])
 
         self.clips = 100
