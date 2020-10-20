@@ -12,23 +12,23 @@ if(__name__ == "__main__"):
 
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	
-	parser.add_argument('--policyName', help='file name of the initial policy', type=str, default='initial_policy_Laikago')
+	parser.add_argument('--policyName', help='file name of the initial policy', type=str, default='initial_policy_Laikago_temp')
 	args = parser.parse_args()	
 	env = e.LaikagoEnv(render=True, wedge = True, stairs = False,on_rack=False)
 
 	tuned_actions= np.array([
 
-							[0.5,0.5,0.5,0.5,
+							[0.8,0.8,0.8,0.8,
                               0.0,0.0,0.0,0.0,
                              -1.0,-1.0,-1.0,-1.0,
-                             -1.0,-1.0,-1.0,-1.0,
+                             -0.8,-0.8,-0.8,-0.8,
                               0.0, 0.0, 0.0, 0.0],
 
-					          [0.5,0.5,0.5,0.5,
+					          [0.8,0.8,0.8,0.8,
                                0.0,0.0,0.0,0.0,
                               -1.0,-1.0,-1.0,-1.0,
                               -0.5,-0.5,-0.5,-0.5,
-                               1, 1, 1, 1],
+                               0.8, 0.8, 0.8, 0.8],
 
 							  [0.5, 0.5, 0.5, 0.5,
 							   0.0, 0.0, 0.0, 0.0,
@@ -47,7 +47,7 @@ if(__name__ == "__main__"):
 	do_supervised_learning = True
 
 	#for HyQ	
-	idx1 = [4]
+	idx1 = [3]
 	idx2 = [0,3]
 
 	experiment_counter = 0

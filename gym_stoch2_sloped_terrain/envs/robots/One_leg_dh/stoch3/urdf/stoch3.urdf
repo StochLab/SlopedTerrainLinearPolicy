@@ -1,0 +1,955 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="stoch3">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.10238 -1.8464E-05 0.0026538"
+        rpy="0 0 0" />
+      <mass
+        value="7.302" />
+      <inertia
+        ixx="0.0090197"
+        ixy="2.2679E-06"
+        ixz="6.4897E-05"
+        iyy="0.0094033"
+        iyz="-2.1628E-08"
+        izz="0.01573" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="fl_abd_link">
+    <inertial>
+      <origin
+        xyz="-0.036118 -2.6003E-07 0.070269"
+        rpy="0 0 0" />
+      <mass
+        value="0.978" />
+      <inertia
+        ixx="0.00059328"
+        ixy="5.8815E-09"
+        ixz="-6.723E-07"
+        iyy="0.00046214"
+        iyz="3.3247E-08"
+        izz="0.00045941" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_abd_joint"
+    type="revolute">
+    <origin
+      xyz="0.18598 0.10004 -0.0005"
+      rpy="1.5708 0 1.571" />
+    <parent
+      link="base_link" />
+    <child
+      link="fl_abd_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.5708"
+      upper="3.5708"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="fl_upper_leg_link">
+    <inertial>
+      <origin
+        xyz="0.072527 1.3632E-05 0.076425"
+        rpy="0 0 0" />
+      <mass
+        value="1.547" />
+      <inertia
+        ixx="0.00031538"
+        ixy="4.8938E-07"
+        ixz="4.0486E-06"
+        iyy="0.0028703"
+        iyz="6.4786E-11"
+        izz="0.0031011" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_upper_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_upper_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.01975 0 0.074"
+      rpy="0 1.5708 0" />
+    <parent
+      link="fl_abd_link" />
+    <child
+      link="fl_upper_leg_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.5708"
+      upper="6.2832"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="fl_lower_leg_link">
+    <inertial>
+      <origin
+        xyz="0.086252 -0.0035444 5.8283E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.18" />
+      <inertia
+        ixx="2.0675E-05"
+        ixy="3.9572E-05"
+        ixz="-2.4321E-09"
+        iyy="0.0010716"
+        iyz="8.8848E-10"
+        izz="0.0010886" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_lower_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_lower_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_knee_joint"
+    type="revolute">
+    <origin
+      xyz="0.297 0 0.1385"
+      rpy="0 0 3.1416" />
+    <parent
+      link="fl_upper_leg_link" />
+    <child
+      link="fl_lower_leg_link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="fl_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0031638 -3.2732E-12 -0.00086153"
+        rpy="0 0 0" />
+      <mass
+        value="0.02" />
+      <inertia
+        ixx="1.2618E-05"
+        ixy="-3.347E-13"
+        ixz="-5.684E-07"
+        iyy="2.1257E-05"
+        iyz="-1.222E-12"
+        izz="1.0686E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fl_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_ankel_joint"
+    type="fixed">
+    <origin
+      xyz="0.27479 -0.00065295 0"
+      rpy="1.5708 0 0" />
+    <parent
+      link="fl_lower_leg_link" />
+    <child
+      link="fl_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="fr_abd_link">
+    <inertial>
+      <origin
+        xyz="0.07027 0.036118 -2.9553E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.978" />
+      <inertia
+        ixx="0.00045941"
+        ixy="6.965E-07"
+        ixz="-3.3418E-08"
+        iyy="0.00059328"
+        iyz="-5.8767E-09"
+        izz="0.00046214" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_abd_joint"
+    type="revolute">
+    <origin
+      xyz="0.18602 -0.099961 -0.0005"
+      rpy="0 0 0.00021134" />
+    <parent
+      link="base_link" />
+    <child
+      link="fr_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.5708"
+      upper="3.5708"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="fr_upper_leg_link">
+    <inertial>
+      <origin
+        xyz="-0.072527 -0.076425 -1.3632E-05"
+        rpy="0 0 0" />
+      <mass
+        value="1.547" />
+      <inertia
+        ixx="0.00031538"
+        ixy="4.0486E-06"
+        ixz="4.8939E-07"
+        iyy="0.0031011"
+        iyz="6.4776E-11"
+        izz="0.0028703" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_upper_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_upper_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_hip_joint"
+    type="revolute">
+    <origin
+      xyz="0.074 0.01975 0"
+      rpy="0 0 0" />
+    <parent
+      link="fr_abd_link" />
+    <child
+      link="fr_upper_leg_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.5708"
+      upper="6.2832"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="fr_lower_leg_link">
+    <inertial>
+      <origin
+        xyz="0.086252 5.8285E-07 0.0035444"
+        rpy="0 0 0" />
+      <mass
+        value="0.18" />
+      <inertia
+        ixx="2.0675E-05"
+        ixy="-2.4323E-09"
+        ixz="-3.9572E-05"
+        iyy="0.0010886"
+        iyz="-8.8856E-10"
+        izz="0.0010716" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_lower_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_lower_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_knee_joint"
+    type="revolute">
+    <origin
+      xyz="-0.297 -0.1385 0"
+      rpy="0 0 0" />
+    <parent
+      link="fr_upper_leg_link" />
+    <child
+      link="fr_lower_leg_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="fr_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0031638 -3.2735E-12 -0.00086153"
+        rpy="0 0 0" />
+      <mass
+        value="0.02" />
+      <inertia
+        ixx="1.2618E-05"
+        ixy="-3.347E-13"
+        ixz="-5.684E-07"
+        iyy="2.1257E-05"
+        iyz="-1.222E-12"
+        izz="1.0686E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/fr_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_ankel_joint"
+    type="fixed">
+    <origin
+      xyz="0.27479 0 0.00065295"
+      rpy="0 0 0" />
+    <parent
+      link="fr_lower_leg_link" />
+    <child
+      link="fr_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="bl_abd_link">
+    <inertial>
+      <origin
+        xyz="-0.06995 -0.037322 -1.8681E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.978" />
+      <inertia
+        ixx="0.00039025"
+        ixy="5.9364E-08"
+        ixz="1.1626E-07"
+        iyy="0.00050148"
+        iyz="5.3635E-09"
+        izz="0.00037524" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bl_abd_joint"
+    type="revolute">
+    <origin
+      xyz="-0.18602 0.099961 -0.0005"
+      rpy="0 0 0.00021134" />
+    <parent
+      link="base_link" />
+    <child
+      link="bl_abd_link" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-3.5708"
+      upper="3.5708"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="bl_upper_leg_link">
+    <inertial>
+      <origin
+        xyz="-0.072527 0.076425 1.3632E-05"
+        rpy="0 0 0" />
+      <mass
+        value="1.547" />
+      <inertia
+        ixx="0.00031538"
+        ixy="-4.0486E-06"
+        ixz="-4.8938E-07"
+        iyy="0.0031011"
+        iyz="6.4786E-11"
+        izz="0.0028703" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_upper_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_upper_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bl_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.074 -0.01975 0"
+      rpy="0 0 0" />
+    <parent
+      link="bl_abd_link" />
+    <child
+      link="bl_upper_leg_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.5708"
+      upper="6.2832"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="bl_lower_leg_link">
+    <inertial>
+      <origin
+        xyz="0.086252 5.8285E-07 0.0035444"
+        rpy="0 0 0" />
+      <mass
+        value="0.13457" />
+      <inertia
+        ixx="2.0675E-05"
+        ixy="-2.4323E-09"
+        ixz="-3.9572E-05"
+        iyy="0.0010886"
+        iyz="-8.8856E-10"
+        izz="0.0010716" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_lower_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_lower_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bl_knee_joint"
+    type="revolute">
+    <origin
+      xyz="-0.297 0.1385 0"
+      rpy="0 0 0" />
+    <parent
+      link="bl_upper_leg_link" />
+    <child
+      link="bl_lower_leg_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="bl_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0031638 -3.2733E-12 -0.00086153"
+        rpy="0 0 0" />
+      <mass
+        value="0.02" />
+      <inertia
+        ixx="1.2618E-05"
+        ixy="-3.347E-13"
+        ixz="-5.684E-07"
+        iyy="2.1257E-05"
+        iyz="-1.222E-12"
+        izz="1.0686E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/bl_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bl_ankel_joint"
+    type="fixed">
+    <origin
+      xyz="0.27479 0 0.00065295"
+      rpy="0 0 0" />
+    <parent
+      link="bl_lower_leg_link" />
+    <child
+      link="bl_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="br_abd_link">
+    <inertial>
+      <origin
+        xyz="-0.070173 0.037288 -1.5868E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.978" />
+      <inertia
+        ixx="0.00038996"
+        ixy="-9.0848E-07"
+        ixz="-8.0338E-08"
+        iyy="0.00050185"
+        iyz="-1.0951E-09"
+        izz="0.00037578" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="br_abd_joint"
+    type="revolute">
+    <origin
+      xyz="-0.18598 -0.10004 -0.0005"
+      rpy="0 0 0.00021134" />
+    <parent
+      link="base_link" />
+    <child
+      link="br_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.5708"
+      upper="3.5708"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="br_upper_leg_link">
+    <inertial>
+      <origin
+        xyz="-0.072527 -0.076425 -1.3632E-05"
+        rpy="0 0 0" />
+      <mass
+        value="1.547" />
+      <inertia
+        ixx="0.00031538"
+        ixy="4.0486E-06"
+        ixz="4.8939E-07"
+        iyy="0.0031011"
+        iyz="6.4776E-11"
+        izz="0.0028703" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_upper_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_upper_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="br_hip_joint"
+    type="revolute">
+    <origin
+      xyz="-0.074 0.01975 0"
+      rpy="0 0 0" />
+    <parent
+      link="br_abd_link" />
+    <child
+      link="br_upper_leg_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.5708"
+      upper="6.2832"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="br_lower_leg_link">
+    <inertial>
+      <origin
+        xyz="0.086252 5.8285E-07 0.0035444"
+        rpy="0 0 0" />
+      <mass
+        value="0.18" />
+      <inertia
+        ixx="2.0675E-05"
+        ixy="-2.4323E-09"
+        ixz="-3.9572E-05"
+        iyy="0.0010886"
+        iyz="-8.8856E-10"
+        izz="0.0010716" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_lower_leg_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_lower_leg_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="br_knee_joint"
+    type="revolute">
+    <origin
+      xyz="-0.297 -0.1385 0"
+      rpy="0 0 0" />
+    <parent
+      link="br_upper_leg_link" />
+    <child
+      link="br_lower_leg_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="100"
+      velocity="100" />
+  </joint>
+  <link
+    name="br_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0031638 -3.2731E-12 -0.00086153"
+        rpy="0 0 0" />
+      <mass
+        value="0.02" />
+      <inertia
+        ixx="1.2618E-05"
+        ixy="-3.347E-13"
+        ixz="-5.684E-07"
+        iyy="2.1257E-05"
+        iyz="-1.222E-12"
+        izz="1.0686E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://stoch3/meshes/br_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="br_ankel_joint"
+    type="fixed">
+    <origin
+      xyz="0.27479 0 0.00065295"
+      rpy="0 0 0" />
+    <parent
+      link="br_lower_leg_link" />
+    <child
+      link="br_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

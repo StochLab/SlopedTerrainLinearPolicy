@@ -406,8 +406,8 @@ class LaikagoEnv(gym.Env):
             self.incline_ori = ori + PI / 12 * idx2
 
         else:
-            avail_deg = [7, 9, 11, 13, 15]
-            self.incline_deg = avail_deg[random.randint(0, 4)]
+            avail_deg = [7, 9, 11, 13]
+            self.incline_deg = avail_deg[random.randint(0, 3)]
             self.incline_ori = (PI / 12) * random.randint(0, 3)  # resolution of 15 degree
 
     def boundYshift(self, x, y):
@@ -637,7 +637,7 @@ class LaikagoEnv(gym.Env):
 
         '''
         wedge_angle = self.incline_deg * PI / 180
-        robot_height_from_support_plane = 0.43
+        robot_height_from_support_plane = 0.40
         pos, ori = self.GetBasePosAndOrientation()
 
         RPY_orig = self._pybullet_client.getEulerFromQuaternion(ori)
@@ -697,10 +697,10 @@ class LaikagoEnv(gym.Env):
             # kp2 = 500
             # kd2 = 50
 
-            kp1 = 1500
+            kp1 = 1200
             kd1 = 80
-            kp2 = 500
-            kd2 = 50
+            kp2 = 200
+            kd2 = 20
             applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
                                         (motor_vel_commands[0:6] - qvel_act[0:6])
             applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
@@ -712,9 +712,9 @@ class LaikagoEnv(gym.Env):
             # kp2 = 220
             # kd2 = 20
 
-            kp1 = 500
-            kd1 = 50
-            kp2 = 1500
+            kp1 = 200
+            kd1 = 20
+            kp2 = 1200
             kd2 = 80
 
             applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \

@@ -263,6 +263,8 @@ class WalkingController():
             leg.motor_hip = leg.motor_hip + self.MOTOROFFSETS_Laikago[0]
             leg.motor_knee = leg.motor_knee + self.MOTOROFFSETS_Laikago[1]
             leg.motor_abduction = leg.motor_abduction * self.leg_name_to_dir_Laikago[leg.name]
+            leg.motor_abduction = leg.motor_abduction + 0.07
+
 
         leg_motor_angles = [legs.front_left.motor_hip, legs.front_left.motor_knee, legs.front_left.motor_abduction,
                             legs.back_right.motor_hip, legs.back_right.motor_knee, legs.back_right.motor_abduction,
