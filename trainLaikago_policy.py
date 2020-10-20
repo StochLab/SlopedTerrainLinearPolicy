@@ -420,7 +420,7 @@ if __name__ == "__main__":
     print("log dir", args.logdir)
     hp.logdir = args.logdir
     np.random.seed(hp.seed)
-    max_processes = 20
+    max_processes = 12
     parentPipes = None
     if args.mp:
         num_processes = min([hp.nb_directions, max_processes])
