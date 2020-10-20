@@ -29,9 +29,9 @@
           filename="package://stoch3/meshes/base_link.STL" />
       </geometry>
       <material
-        name="">
+        name="red">
         <color
-          rgba="0.75294 0.75294 0.75294 1" />
+          rgba="1.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -69,9 +69,9 @@
           filename="package://stoch3/meshes/fl_abd_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -127,9 +127,9 @@
           filename="package://stoch3/meshes/fl_upper_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -185,9 +185,9 @@
           filename="package://stoch3/meshes/fl_lower_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="grey">
         <color
-          rgba="0.89804 0.91765 0.92941 1" />
+          rgba="0.5 0.5 0.5 1.0" />
       </material>
     </visual>
     <collision>
@@ -243,9 +243,9 @@
           filename="package://stoch3/meshes/fl_foot_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -296,9 +296,9 @@
           filename="package://stoch3/meshes/fr_abd_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -354,9 +354,9 @@
           filename="package://stoch3/meshes/fr_upper_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -412,9 +412,9 @@
           filename="package://stoch3/meshes/fr_lower_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="grey">
         <color
-          rgba="0.89804 0.91765 0.92941 1" />
+          rgba="0.5 0.5 0.5 1.0" />
       </material>
     </visual>
     <collision>
@@ -470,9 +470,9 @@
           filename="package://stoch3/meshes/fr_foot_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -523,9 +523,9 @@
           filename="package://stoch3/meshes/bl_abd_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -581,9 +581,9 @@
           filename="package://stoch3/meshes/bl_upper_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -639,9 +639,9 @@
           filename="package://stoch3/meshes/bl_lower_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="grey">
         <color
-          rgba="0.89804 0.91765 0.92941 1" />
+          rgba="0.5 0.5 0.5 1.0" />
       </material>
     </visual>
     <collision>
@@ -697,9 +697,9 @@
           filename="package://stoch3/meshes/bl_foot_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -750,9 +750,9 @@
           filename="package://stoch3/meshes/br_abd_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -808,9 +808,9 @@
           filename="package://stoch3/meshes/br_upper_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>
@@ -866,9 +866,9 @@
           filename="package://stoch3/meshes/br_lower_leg_link.STL" />
       </geometry>
       <material
-        name="">
+        name="grey">
         <color
-          rgba="0.89804 0.91765 0.92941 1" />
+          rgba="0.5 0.5 0.5 1.0" />
       </material>
     </visual>
     <collision>
@@ -924,9 +924,9 @@
           filename="package://stoch3/meshes/br_foot_link.STL" />
       </geometry>
       <material
-        name="">
+        name="black">
         <color
-          rgba="0.79216 0.81961 0.93333 1" />
+          rgba="0.0 0.0 0.0 1" />
       </material>
     </visual>
     <collision>

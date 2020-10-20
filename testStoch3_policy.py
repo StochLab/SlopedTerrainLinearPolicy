@@ -58,16 +58,17 @@ if __name__ == '__main__':
 		print('Roll:',math.degrees(env.support_plane_estimated_roll),
 		      'Pitch:',math.degrees(env.support_plane_estimated_pitch))
 		#action = policy.dot(state)
-		action = np.array([0.0,0.0,0.0,0.0,
-				  0.0,0.0,0.0,0.0,
-
-				  -1.0,-1.0,-1.0,-1.0,
-					  0.0,0.0,0.0,0.0,
-		    	    0.0,0.0,0.0,0.0 ])
+		action = np.array([1.0,1.0,1.0,1.0,
+				           0.0,0.0,0.0,0.0,
+						  -1.0,-1.0,-1.0,-1.0,
+					       0.0,0.0,0.0,0.0,
+		    	           0.0,0.0,0.0,0.0 ])
 		if(i_step%100 == 0):
 			action[12:16] = -1*action[12:16]
 		state, r, _, angle = env.step(action)
 
 		t_r +=r
+		if(i_step % 15 ==0):
+			env.vis_foot_traj()
 
 	print("Total_reward "+ str(t_r))
