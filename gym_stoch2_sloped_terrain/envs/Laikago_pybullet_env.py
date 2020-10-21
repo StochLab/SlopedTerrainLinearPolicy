@@ -676,7 +676,7 @@ class LaikagoEnv(gym.Env):
             reward = 0
         else:
             reward = round(yaw_reward, 4) + round(pitch_reward, 4) + round(roll_reward, 4) \
-                     + round(height_reward, 4) + 150 * round(step_distance_x, 4) - 20 * round(step_distance_y, 4)
+                     + round(height_reward, 4) + 200 * round(step_distance_x, 4) #- 50 * round(step_distance_y,4)
 
             '''
             #Penalize for standing at same position for continuous 150 steps

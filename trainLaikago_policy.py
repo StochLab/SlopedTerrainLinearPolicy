@@ -257,7 +257,7 @@ def train(env, policy, hp, parentPipes, args):
             env.randomize_only_inclines()
         # Cirriculum learning
         if (step > hp.curilearn):
-            avail_deg = [9, 11, 13, 13]
+            avail_deg = [7, 9, 11, 13]
             env.incline_deg = avail_deg[random.randint(0, 3)]
         else:
             avail_deg = [7, 9]
