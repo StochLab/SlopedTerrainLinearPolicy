@@ -58,13 +58,13 @@ class LaikagoEnv(gym.Env):
 
         self._theta = 0
 
-        self._frequency = -3
+        self._frequency = 1
         self.termination_steps = end_steps
         self.downhill = downhill
 
         # PD gains
-        self._kp = 500
-        self._kd = 50
+        self._kp = 1000
+        self._kd = 80
 
         self.dt = 0.005
         self._frame_skip = 25
@@ -101,7 +101,7 @@ class LaikagoEnv(gym.Env):
         self.linearV = 0
         self.angV = 0
         self.prev_vel = [0, 0, 0]
-
+        self.prev_feet_points = np.ndarray((5,3))
         self.x_f = 0
         self.y_f = 0
 
@@ -294,6 +294,17 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetBaseVelocity(self.Laikago, [0, 0, 0], [0, 0, 0])
         self.reset_standing_position()
 
+
+        LINK_ID = [0,3,7,11,15]
+        i=0
+        for  link_id in LINK_ID:
+            if(link_id!=0):
+                self.prev_feet_points[i] = np.array(self._pybullet_client.getLinkState(self.Laikago,link_id)[0])
+            else:
+                self.prev_feet_points[i] = np.array(self.GetBasePosAndOrientation()[0])
+            i+=1
+
+
         self._pybullet_client.resetDebugVisualizerCamera(self._cam_dist, self._cam_yaw, self._cam_pitch, [0, 0, 0])
         self._n_steps = 0
         return self.GetObservation()
@@ -456,7 +467,7 @@ class LaikagoEnv(gym.Env):
 
         action[:4] = (action[:4] + 1) / 2  # Step lengths are positive always
 
-        action[:4] = action[:4] * 3 * 0.068  # Max steplength = 2x0.068
+        action[:4] = action[:4] * 2 * 0.068  # Max steplength = 2x0.068
 
         action[4:8] = action[4:8] * PI / 2  # PHI can be [-pi/2, pi/2]
 
@@ -541,7 +552,7 @@ class LaikagoEnv(gym.Env):
         self.action = action
         ii = 0
 
-        leg_m_angle_cmd = self._walkcon.run_elliptical_Traj_Laikago(self._theta, action)
+        leg_m_angle_cmd = self._walkcon.run_elliptical_Traj_Stoch3(self._theta, action)
 
         self._theta = constrain_theta(omega * self.dt + self._theta)
 
@@ -553,7 +564,7 @@ class LaikagoEnv(gym.Env):
 
         for _ in range(n_frames):
             ii = ii + 1
-            applied_motor_torque = self._apply_pd_control(m_angle_cmd_ext, m_vel_cmd_ext, self._theta)
+            applied_motor_torque = self._apply_pd_control(m_angle_cmd_ext, m_vel_cmd_ext)
             self._pybullet_client.stepSimulation()
 
             if self._n_steps >= self.pertub_steps and self._n_steps <= self.pertub_steps + self.stride:
@@ -682,54 +693,36 @@ class LaikagoEnv(gym.Env):
 
         return reward, done
 
-    def _apply_pd_control(self, motor_commands, motor_vel_commands, theta):
+    def vis_foot_traj(self,line_thickness = 5,life_time = 15):
+        LINK_ID = [0,3,7,11,15]
+        i=0
+        for  link_id in LINK_ID:
+            if(link_id!=0):
+                current_point = self._pybullet_client.getLinkState(self.Laikago,link_id)[0]
+                self._pybullet_client.addUserDebugLine(current_point,self.prev_feet_points[i],[1,0,0],line_thickness,lifeTime=life_time)
+            else:
+                current_point = self.GetBasePosAndOrientation()[0]
+                #self._pybullet_client.addUserDebugLine(current_point,self.prev_feet_points[i],[0,0,1],line_thickness,lifeTime=100)
+            self.prev_feet_points[i] = current_point
+            i+=1
+
+
+    def _apply_pd_control(self, motor_commands, motor_vel_commands):
         '''
-		Apply PD control to reach desired motor position commands
-		Ret:
+        Apply PD control to reach desired motor position commands
+        Ret:
 			applied_motor_torque : array of applied motor torque values in order [FLH FLK FRH FRK BLH BLK BRH BRK FLA FRA BLA BRA]
 		'''
         qpos_act = self.GetMotorAngles()
         qvel_act = self.GetMotorVelocities()
-        applied_motor_torque = np.zeros(12)
-        if theta > 100:
-            # kp1 = 220
-            # kd1 = 20
-            # kp2 = 500
-            # kd2 = 50
-
-            kp1 = 1500
-            kd1 = 80
-            kp2 = 200
-            kd2 = 20
-            applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
-                                        (motor_vel_commands[0:6] - qvel_act[0:6])
-            applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
-                                         (motor_vel_commands[6:12] - qvel_act[6:12])
-
-        else:
-            # kp1 = 500
-            # kd1 = 50
-            # kp2 = 220
-            # kd2 = 20
-
-            kp1 = 200
-            kd1 = 20
-            kp2 = 1500
-            kd2 = 80
-
-            applied_motor_torque[0:6] = kp1 * (motor_commands[0:6] - qpos_act[0:6]) + kd1 * \
-                                        (motor_vel_commands[0:6] - qvel_act[0:6])
-            applied_motor_torque[6:12] = kp2 * (motor_commands[6:12] - qpos_act[6:12]) + kd2 * \
-                                         (motor_vel_commands[6:12] - qvel_act[6:12])
-
-        self.clips = 100
-        applied_motor_torque = np.clip(np.array(applied_motor_torque), -self.clips, self.clips)
-
+        applied_motor_torque = self._kp * (motor_commands - qpos_act) + self._kd * (motor_vel_commands - qvel_act)
+        motor_strength = 200
+        applied_motor_torque = np.clip(np.array(applied_motor_torque), -motor_strength, motor_strength)
         applied_motor_torque = applied_motor_torque.tolist()
-
         for motor_id, motor_torque in zip(self._motor_id_list, applied_motor_torque):
             self.SetMotorTorqueById(motor_id, motor_torque)
         return applied_motor_torque
+
 
     def add_noise(self, sensor_value, SD=0.04):
         '''
@@ -875,7 +868,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["fl_hip_joint"],  # motor
-            targetValue=0, targetVelocity=0)
+            targetValue=np.pi/2, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -888,7 +881,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["fl_knee_joint"],
-            targetValue=0, targetVelocity=0)
+            targetValue=-np.pi, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -901,7 +894,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["br_hip_joint"],  # motor
-            targetValue=0, targetVelocity=0)
+            targetValue=np.pi/2, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -914,7 +907,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["br_knee_joint"],
-            targetValue=0, targetVelocity=0)
+            targetValue=-np.pi, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -927,7 +920,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["fr_hip_joint"],  # motor
-            targetValue=0, targetVelocity=0)
+            targetValue=np.pi/2, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -940,7 +933,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["fr_knee_joint"],
-            targetValue=0, targetVelocity=0)
+            targetValue=-np.pi, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -953,7 +946,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["bl_hip_joint"],  # motor
-            targetValue=0, targetVelocity=0)
+            targetValue=np.pi/2, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
@@ -966,7 +959,7 @@ class LaikagoEnv(gym.Env):
         self._pybullet_client.resetJointState(
             self.Laikago,
             self._joint_name_to_id["bl_knee_joint"],
-            targetValue=0, targetVelocity=0)
+            targetValue=-np.pi, targetVelocity=0)
 
         self._pybullet_client.setJointMotorControl2(
             bodyIndex=self.Laikago,
