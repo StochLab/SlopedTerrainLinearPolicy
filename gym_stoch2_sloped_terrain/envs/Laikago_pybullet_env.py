@@ -738,7 +738,7 @@ class LaikagoEnv(gym.Env):
             applied_motor_torque[6:12] = kp_swing * (motor_commands[6:12] - qpos_act[6:12]) + kd_swing * \
                                          (motor_vel_commands[6:12] - qvel_act[6:12])
 
-        self.clips = 100
+        self.clips = 120
         applied_motor_torque = np.clip(np.array(applied_motor_torque), -self.clips, self.clips)
 
         applied_motor_torque = applied_motor_torque.tolist()
