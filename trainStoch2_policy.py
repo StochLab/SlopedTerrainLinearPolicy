@@ -1,11 +1,13 @@
 import sys, os
+
+
 import inspect
 
 # Importing the libraries
 import os
 import numpy as np
 import gym
-import gym_sloped_terrain.envs.HyQ_pybullet_env as e
+import gym_sloped_terrain.envs.stoch2_pybullet_env as e
 from gym import wrappers
 import time
 import multiprocessing as mp
@@ -125,12 +127,9 @@ class Policy():
 
   def __init__(self, input_size, output_size, env_name, normal, args):
     try:
-      print("Training from guided policy,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
       self.theta = np.load(args.policy)
     except:
-      print("Training from random policy")
       if(normal):
-        print("Training from random policy")
         self.theta = np.random.randn(output_size, input_size)
       else:
         self.theta = np.zeros((output_size, input_size))
@@ -180,7 +179,7 @@ def policyevaluation(env,policy,hp):
 
       # Evaluation Dataset with domain randomization
       #--------------------------------------------------------------
-      incline_deg_range = [3,4]     #9, 11
+      incline_deg_range = [2,3]     #9, 11
       incline_ori_range = [0,2,3]   #0, 60, 90 degree
       fric=[0,1]                    #surface friction 0.55, 0.6
       mf=[0]                        #extra mass at front 0gm
@@ -205,8 +204,8 @@ def policyevaluation(env,policy,hp):
     else:
       # Evaluation Dataset without domain randomization
       # --------------------------------------------------------------
-      incline_deg_range = [2, 3, 4]  # 11, 13
-      incline_ori_range = [0, 2, 3]  # 0, 30, 45 degree
+      incline_deg_range = [2, 3]  # 9, 11
+      incline_ori_range = [0, 2, 3]  # 0, 60, 90 degree
       # --------------------------------------------------------------
       total_combinations = len(incline_deg_range) * len(incline_ori_range)
 
@@ -248,11 +247,11 @@ def train(env, policy,hp, parentPipes, args):
       env.randomize_only_inclines()
     #Cirriculum learning
     if(step>hp.curilearn):
-      avail_deg = [9,11,13,13,15]
-      env.incline_deg = avail_deg[random.randint(0,4)]
+      avail_deg = [7,9,11,11]
+      env.incline_deg = avail_deg[random.randint(0,3)]
     else:
-      avail_deg = [7,9]
-      env.incline_deg = avail_deg[random.randint(0,1)]
+      avail_deg = [5,7,9]
+      env.incline_deg = avail_deg[random.randint(0,2)]
 
     # Initializing the perturbations deltas and the positive/negative rewards
     deltas = policy.sample_deltas()
@@ -343,7 +342,7 @@ def mkdir(base, name):
 
 if __name__ == "__main__":  
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument('--env', help='Gym environment name', type=str, default='HyQ-v0')
+  parser.add_argument('--env', help='Gym environment name', type=str, default='Stoch2-v0')
   parser.add_argument('--seed', help='RNG seed', type=int, default=1234123)
   parser.add_argument('--render', help='OpenGL Visualizer', type=int, default=0)
   parser.add_argument('--steps', help='Number of steps', type=int, default=10000)
@@ -360,7 +359,7 @@ if __name__ == "__main__":
   parser.add_argument('--stairs', help='add stairs to the bezier environment', type=int, default=0)
   parser.add_argument('--action_dim', help='degree of the spline polynomial used in the training', type=int, default=20)
   parser.add_argument('--directions', help='divising factor of total directions to use', type=int, default=2)
-  parser.add_argument('--curi_learn', help='after how many iteration steps second stage of curriculum learning should start', type=int, default=20)
+  parser.add_argument('--curi_learn', help='after how many iteration steps second stage of curriculum learning should start', type=int, default=60)
   parser.add_argument('--eval_step', help='policy evaluation after how many steps should take place', type=int, default=3)
   parser.add_argument('--domain_Rand', help='add domain randomization', type=int, default=1)
   parser.add_argument('--anti_clock_ori', help='rotate the inclines anti-clockwise', type=bool, default=True)
@@ -385,8 +384,8 @@ if __name__ == "__main__":
     phase = custom_phase
   #Custom environments that you want to use ----------------------------------------------------------------------------------------
   register(id=args.env,
-           entry_point='gym_sloped_terrain.envs.HyQ_pybullet_env:HyQEnv',
-           kwargs = {'gait' : args.gait, 'render': False, 'action_dim': args.action_dim} )
+           entry_point='gym_sloped_terrain.envs.stoch2_pybullet_env:Stoch2Env', 
+           kwargs = {'gait' : args.gait, 'render': False, 'action_dim': args.action_dim, 'stairs': args.stairs, 'anti_clock_ori': args.anti_clock_ori} )
   #---------------------------------------------------------------------------------------------------------------------------------
 
   hp = HyperParameters()
@@ -413,7 +412,7 @@ if __name__ == "__main__":
   print("log dir", args.logdir)
   hp.logdir =args.logdir
   np.random.seed(hp.seed)
-  max_processes = 20
+  max_processes = 15
   parentPipes = None
   if args.mp:
     num_processes = min([hp.nb_directions, max_processes])

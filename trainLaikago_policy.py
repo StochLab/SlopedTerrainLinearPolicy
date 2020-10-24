@@ -5,7 +5,7 @@ import inspect
 import os
 import numpy as np
 import gym
-import gym_stoch2_sloped_terrain.envs.Laikago_pybullet_env as e
+import gym_sloped_terrain.envs.Laikago_pybullet_env as e
 from gym import wrappers
 import time
 import multiprocessing as mp
@@ -392,7 +392,7 @@ if __name__ == "__main__":
         phase = custom_phase
     # Custom environments that you want to use ----------------------------------------------------------------------------------------
     register(id=args.env,
-             entry_point='gym_stoch2_sloped_terrain.envs.Laikago_pybullet_env:LaikagoEnv',
+             entry_point='gym_sloped_terrain.envs.Laikago_pybullet_env:LaikagoEnv',
              kwargs={'gait': args.gait, 'render': False, 'action_dim': args.action_dim})
     # ---------------------------------------------------------------------------------------------------------------------------------
 
