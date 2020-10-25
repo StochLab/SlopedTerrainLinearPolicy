@@ -9,7 +9,7 @@
    <img width="240" height="190" src="https://github.com/lok-i/Stoch2_gym_env/blob/other_robots/media/stoch2dist.gif">
 </p>
 
-This is the main code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in JMLR.
+The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in JMLR.
 
 ### Getting Started:
 To install the package and its dependenclies run 
@@ -149,7 +149,7 @@ To run a policy on a arbitary slope track, the following command is to be used.
 2. For loading the policies from other directories, you might have to change the path from within the *test_policy.py* file.
 3. In our method we only train for +ve roll and -ve pitch conditions of support plane, the trained policy is able to generalize for other conditions too.
 4. Our env is not fully supported for training in downhill case, but you can evalute policy in downhill conditions.
-5. The  stairs, domain parameters that could be randomized, and arbitary slopes has not yet been added in *testLaikago_policy.py and testHyQ_policy.py*.
+5. The  features like stairs, domain parameters that could be randomized, and arbitary slopes hve not yet been added in *testLaikago_policy.py and testHyQ_policy.py*.
 
 
 
