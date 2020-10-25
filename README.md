@@ -62,7 +62,7 @@ This saves the initial policy as *filename.npy* in the initial_policies folder.T
 | Parameter     |About        |  type |
 |:-------------:|:-------------:| -----:|
 |--policyName   | name of the intial policy | str |
-|--robotName    | name of the robot(Stoch2/Laikago/HyQ) | str |
+|--robotName    | name of the robot (Stoch2/Laikago/HyQ) | str |
 
 **Note:** The initial policies are by default saved in the *initial_policies* folder.
 
