@@ -1,6 +1,14 @@
 ## Robust Quadrupedal Locomotion on Sloped Terrains:A Linear Policy Approach
 
 ### Introduction:
+
+<p align="center">
+   <img width="150" height="200" src="https://github.com/lok-i/Stoch2_gym_env/blob/other_robots/media/stoch2uphill.gif">
+   <img width="150" height="200" src="https://github.com/lok-i/Stoch2_gym_env/blob/other_robots/media/stoch2arbitary.gif">
+   <img width="150" height="200" src="https://github.com/lok-i/Stoch2_gym_env/blob/other_robots/media/stoch2stair1.gif">
+   <img width="150" height="200" src="https://github.com/lok-i/Stoch2_gym_env/blob/other_robots/media/stoch2dist.gif">
+</p>
+
 This is the main code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in JMLR.
 
 ### Getting Started:
