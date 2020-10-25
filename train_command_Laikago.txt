@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-python3 trainLaikago_policy.py --lr 0.05 --noise 0.04 --directions 3 --gait trot --logdir 21Oct4 --policy initial_policy_Laikago_temp.npy --action_dim 20 --msg "Training with abd spread" --episode_length 400 --eval_step 3 --domain_Rand 0 --curi_learn 10
-=======
-python3 trainLaikago_policy.py --lr 0.05 --noise 0.03 --directions 2 --gait trot --logdir 21Oct2 --policy initial_policy_Laikago_temp.npy --action_dim 20 --msg "Training with abd spread" --episode_length 400 --eval_step 3 --domain_Rand 0
->>>>>>> 2f7ec9b4f4ee968b2a20aad7d2336174a2e29c99
+python3 trainLaikago_policy.py --lr 0.05 --noise 0.04 --directions 3 --gait trot --logdir 21Oct4 --policy initial_policy_Laikago.npy --action_dim 20 --msg "Training with abd spread" --episode_length 400 --eval_step 3 --domain_Rand 0 --curi_learn 10
