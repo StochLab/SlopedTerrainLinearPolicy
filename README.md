@@ -1,7 +1,7 @@
 ## Robust Quadrupedal Locomotion on Sloped Terrains:A Linear Policy Approach
 
 ### Introduction:
-This is the main code base accompanying the paper with the above title, under review in CoRL 2020.
+This is the main code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in JMLR.
 
 ### Getting Started:
 To install the package and its dependenclies run 
@@ -27,19 +27,20 @@ The code base was tested with gym (0.17.2), pybullet (2.8.2) with a python versi
 
 ### HyQ:
 
-|Orientation\Elevation| -13° |-11° |-9° |7° |-5° |5° |7° |9° |11° |13° |
+|Orientation\Elevation|-15° |-13° |-11° |-9° |7° |-5° |5° |7° |9° |11° |13° |15°|
 |:-------------:|:--:|:--:|:--:|:--:|:---:|:--:|:--:|:--:|:---:|:--:|
-|0°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
-|30°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
-|45°| :heavy_check_mark: |:x:  |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|0°| :heavy_check_mark: | :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|30°| :heavy_check_mark: | :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|45°| :heavy_check_mark: | :heavy_check_mark: |:x:  |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
 
 
 ### Laikago:
-|Orientation\Elevation| -13° |-11° |-9° |7° |-5° |5° |7° |9° |11° |13° |
+|Orientation\Elevation|-15° | -13° |-11° |-9° |7° |-5° |5° |7° |9° |11° |13° |15°|
 |:-------------:|:--:|:--:|:--:|:--:|:---:|:--:|:--:|:--:|:---:|:--:|
-|0°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
-|30°| :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
-|45°| :heavy_check_mark: |:x:  |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|0°| :heavy_check_mark: | :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|30°| :heavy_check_mark: | :heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+|45°| :heavy_check_mark: | :heavy_check_mark: |:x:  |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |:heavy_check_mark: |
+
 
 
 
