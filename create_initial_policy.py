@@ -1,6 +1,6 @@
 import numpy as np
 import gym_sloped_terrain.envs.stoch2_pybullet_env as s
-import gym_sloped_terrain.envs.HyQ_pybullet_env as e
+import gym_sloped_terrain.envs.HyQ_pybullet_env as h
 import gym_sloped_terrain.envs.Laikago_pybullet_env as l
 import argparse
 from sklearn.linear_model import LinearRegression
@@ -41,6 +41,18 @@ tuned_actions_Stoch2= np.array([[0.5,0.5,0.5,0.5,
                        -0.5,-0.5,-0.5,-0.5,
                         0.5, 0.5, 0.5, 0.5]
 					  ])
+
+tuned_actions_HyQ=   np.array([[0.0,0.0,0.0,0.0,
+                             -1.0,-1.0,-1.0,-1.0,
+                             -1.0,-1.0,-1.0,-1.0,
+                              0.0, 0.0, 0.0, 0.0],
+
+					          [0.5,0.5,0.5,0.5,
+                               0.0,0.0,0.0,0.0,
+                              -1.0,-1.0,-1.0,-1.0,
+                              -0.5,-0.5,-0.5,-0.5,
+                               0.5, 0.5, 0.5, 0.5]])
+
 
 if(__name__ == "__main__"):
 
@@ -85,7 +97,6 @@ if(__name__ == "__main__"):
 					experiment_counter = experiment_counter +1
 					print("Returns of the experiment:",t_r)
 
-
 	if(args.robotName == 'Laikago'):
 		#for Laikago	
 		idx1 = [3,0]
@@ -113,6 +124,32 @@ if(__name__ == "__main__"):
 				experiment_counter = experiment_counter +1
 				print("Returns of the experiment:",t_r)
 
+	if(args.robotName == 'HyQ'):
+		#for HyQ
+		idx1 = [2]
+		idx2 = [0,3]
+		env = h.HyQEnv(render=True, wedge = True, stairs = False,on_rack=False)
+
+		experiment_counter = 0
+	
+		for i in idx1:
+			for j in idx2:
+				if(i == 0 and j==3):
+					break
+				t_r = 0
+				env.randomize_only_inclines(default=True, idx1=i, idx2=j)
+
+				cstate = env.reset()
+				roll = 0
+				pitch = 0
+
+				for ii in np.arange(0,num_of_steps):
+					cstate, r, _, info = env.step(tuned_actions_Laikago[experiment_counter])
+					t_r +=r
+					states.append(cstate)
+					actions.append(tuned_actions_Laikago[experiment_counter])
+				experiment_counter = experiment_counter +1
+				print("Returns of the experiment:",t_r)
 
 	if(do_supervised_learning):
 		model = LinearRegression(fit_intercept = False)
