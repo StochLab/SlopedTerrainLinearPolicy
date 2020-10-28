@@ -24,6 +24,8 @@ The code base was tested with gym (0.17.2), pybullet (2.8.2) with a python versi
 
 ### Robots Tested for:
 
+The following tables represent the evalualtion of our controller on different inclines across multiple orientations.The limiations (depicted by :x:) are due to factors like the kinematics limits, robot dimensions(height to width ratio), and dynamics of the robot.
+
 ### Stoch2:
 
 |Orientation\Elevation| -13°| -11° |-9° |7° |-5° |5° |7° |9° |11° | 13°|
@@ -105,7 +107,7 @@ To run a policy in default conditions, the following command is to be used.
 
         python testStoch2_policy.py
 
-the following test parameters can be changed while testing the policy,
+The policies for Laikago and HyQ could be tested similarly by running the scripts *testLaikago_policy.py* and *testHyQ_policy.py* respectively.The following test parameters can be changed while testing the policy,
 
 | Parameter     |About        |  type | Allowed values|unit|
 |:-------------:|:-------------:|:-----:|:---------:|:-----:|
@@ -146,10 +148,9 @@ To run a policy on a arbitary slope track, the following command is to be used.
 **Note:** 
 
 1. The test policies are by default loaded from the path *experiments/**given_logdir_name**/iterations/best_policy.npy"*, if not specified it loads the best ever policy pre-trained by us.
-2. For loading the policies from other directories, you might have to change the path from within the *test_policy.py* file.
-3. In our method we only train for +ve roll and -ve pitch conditions of support plane, the trained policy is able to generalize for other conditions too.
-4. Our env is not fully supported for training in downhill case, but you can evalute policy in downhill conditions.
-5. The  features like stairs, domain parameters that could be randomized, and arbitary slopes hve not yet been added in *testLaikago_policy.py and testHyQ_policy.py*.
+2. In our method we only train for +ve roll and -ve pitch conditions of support plane, the trained policy is able to generalize for other conditions too.
+3. Our env is not fully supported for training in downhill case, but you can evalute policy in downhill conditions.
+4. The  features like stairs, domain parameters that could be randomized, and arbitary slopes have not yet been added in *testLaikago_policy.py and testHyQ_policy.py*.
 
 
 
