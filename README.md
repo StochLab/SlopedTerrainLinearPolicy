@@ -113,7 +113,7 @@ The policies for Laikago and HyQ could be tested similarly by running the script
 |:-------------:|:-------------:|:-----:|:---------:|:-----:|
 |--PolicyDir | directory of the policy to be tested (best policies are loaded by default)| str |(check the experiments folder)| - |
 |--Stairs | load staircase | bool |True or False|unitless|
-|--WedgeIncline | the elevation angle of wedge | int |0,5,7,9,11,13|Degrees(°)|
+|--WedgeIncline | the elevation angle of wedge | int |0,5,7,9,11,13,15|Degrees(°)|
 |--WedgeOrientation| the yaw angle of wedge about world z axis | float | -90.0 to 90.0 |Degrees(°)|
 |--EpisodeLength |number of gait steps of a episode| int |0 to inf|number of steps|
 |--MotorStrength|maximum motor strength that could be applied| float |5.0 to 8.0|NewtonMetre(Nm)|
