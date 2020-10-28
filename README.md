@@ -1,4 +1,4 @@
-## Robust Quadrupedal Locomotion on Sloped Terrains:A Linear Policy Approach
+## Robust Quadrupedal Locomotion on Sloped Terrains: A Linear Policy Approach
 
 ### Introduction:
 
@@ -111,7 +111,7 @@ The policies for Laikago and HyQ could be tested similarly by running the script
 
 | Parameter     |About        |  type | Allowed values|unit|
 |:-------------:|:-------------:|:-----:|:---------:|:-----:|
-|--PolicyDir | directory of the policy to be tested | str |(check the experiments folder)| - |
+|--PolicyDir | directory of the policy to be tested (best policies are loaded by default)| str |(check the experiments folder)| - |
 |--Stairs | load staircase | bool |True or False|unitless|
 |--WedgeIncline | the elevation angle of wedge | int |0,5,7,9,11,13|Degrees(°)|
 |--WedgeOrientation| the yaw angle of wedge about world z axis | float | -90.0 to 90.0 |Degrees(°)|
