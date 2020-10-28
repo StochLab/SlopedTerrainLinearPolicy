@@ -3,10 +3,10 @@
 ### Introduction:
 
 <p align="center">
-   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/other_robots/media/stoch2uphill.gif">
-   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/other_robots/media/stoch2arbitary.gif">
-   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/other_robots/media/stoch2stair1.gif">
-   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/other_robots/media/stoch2dist.gif">
+   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/master/media/stoch2uphill.gif">
+   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/master/media/stoch2arbitary.gif">
+   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/master/media/stoch2stair1.gif">
+   <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/master/media/stoch2dist.gif">
 </p>
 
 The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in JMLR.
