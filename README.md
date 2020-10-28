@@ -1,4 +1,4 @@
-## Robust Quadrupedal Locomotion on Sloped Terrains:A Linear Policy Approach
+## Robust Quadrupedal Locomotion on Sloped Terrains: A Linear Policy Approach
 
 ### Introduction:
 
