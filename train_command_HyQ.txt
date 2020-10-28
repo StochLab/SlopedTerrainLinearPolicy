@@ -1,0 +1,1 @@
+python3 trainHyQ_policy.py --lr 0.05 --noise 0.03 --directions 2 --gait trot --logdir 19Oct1 --policy initial_policy_HyQ.npy --action_dim 20 --msg "Training with tStrut IP without DR" --episode_length 400 --eval_step 3 --domain_Rand 0

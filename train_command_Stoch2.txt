@@ -1,0 +1,3 @@
+python3 train_policy.py --lr 0.05 --noise 0.04 --directions 3 --gait trot --logdir 3Aug2 --env Stoch2-v0 --policy ./initial_policies/init_policy_Stoch2.npy --action_dim 20 --msg "Training with tStrut IP without DR" --episode_length 400 --eval_step 3 --domain_Rand 0
+
+

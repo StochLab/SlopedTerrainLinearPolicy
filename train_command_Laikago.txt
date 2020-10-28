@@ -1,0 +1,1 @@
+python3 trainLaikago_policy.py --lr 0.05 --noise 0.04 --directions 3 --gait trot --logdir 21Oct4 --policy initial_policy_Laikago.npy --action_dim 20 --msg "Training with abd spread" --episode_length 400 --eval_step 3 --domain_Rand 0 --curi_learn 10

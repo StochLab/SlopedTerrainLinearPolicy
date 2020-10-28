@@ -1,0 +1,11 @@
+learning_rate: 0.05
+noise: 0.03
+env_name: HyQ-v0
+episode_length: 400.0
+direction ratio: 2.0
+Normal initialization: 1
+Gait: trot
+Incline_Orientaion_Anti-Clockwise: True
+domain_Randomization: 0
+Curriculmn introduced at iteration: 20
+Training with tStrut IP without DR
