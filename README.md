@@ -9,7 +9,7 @@
    <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/master/media/stoch2dist.gif">
 </p>
 
-The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in JMLR.
+The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in PMLR.
 
 ### Getting Started:
 To install the package and its dependenclies run 
