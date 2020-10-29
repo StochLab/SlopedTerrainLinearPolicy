@@ -136,7 +136,7 @@ Thus, for a
         python testStoch2_policy.py --PolicyDir 23July3 --RandomTest True --seed 100
 
 ## To conduct tests on a staircase
-To run a policy on a staircase of fixed dimensions, the following command is to be used.
+To run a policy on a staircase of fixed dimensions, the following command is to be used. As of now only avaialable for Stoch2.
 
         python testStoch2_policy.py --Stairs True
         
