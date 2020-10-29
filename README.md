@@ -141,7 +141,7 @@ To run a policy on a staircase of fixed dimensions, the following command is to 
         python testStoch2_policy.py --Stairs True
         
 ## To conduct tests on a arbitary slopes
-To run a policy on a arbitary slope track, the following command is to be used.
+To run a policy on a arbitary slope track, the following command is to be used. As of now only avaialable for Stoch2.
 
         python arbitary_slope_test.py
 
