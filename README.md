@@ -12,9 +12,7 @@
 The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in PMLR. The supplementary video of this paper can be viewed [here](https://youtu.be/KdQn1e3rI7o).
 
 ### Getting Started:
-To install the package and its dependenclies run 
-
-Inside the folder, Stoch2_gym_env:        
+To install the package and its dependenclies run to following command, inside the folder, Stoch2_gym_env:        
                 
         python -m pip install .
 
