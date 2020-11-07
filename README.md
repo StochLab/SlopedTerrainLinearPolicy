@@ -9,7 +9,7 @@
    <img width="200" height="180" src="https://github.com/CPS-Quadruped/Stoch2_gym_env/blob/master/media/stoch2dist.gif">
 </p>
 
-The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in PMLR. The supplementary video of this paper can be viewed [here](https://youtu.be/KdQn1e3rI7o).
+The code base accompanying the paper with the above title, accepted in CoRL 2020 and to be published in PMLR. The preprint of the submitted work is available [here](https://arxiv.org/abs/2010.16342) and the supplementary video can be viewed [here](https://youtu.be/KdQn1e3rI7o).
 
 ### Getting Started:
 To install the package and its dependenclies run to following command, inside the folder, Stoch2_gym_env:        
