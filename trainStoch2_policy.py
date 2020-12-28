@@ -362,6 +362,7 @@ if __name__ == "__main__":
   parser.add_argument('--curi_learn', help='after how many iteration steps second stage of curriculum learning should start', type=int, default=60)
   parser.add_argument('--eval_step', help='policy evaluation after how many steps should take place', type=int, default=3)
   parser.add_argument('--domain_Rand', help='add domain randomization', type=int, default=1)
+  parser.add_argument('--anti_clock_ori', help='rotate the inclines anti-clockwise', type=bool, default=True)
 
 
   args = parser.parse_args()

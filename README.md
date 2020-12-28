@@ -86,11 +86,12 @@ The above command starts the training for Stoch2 in the default settings and by 
 | --episode_length|Horizon of a episode|int |
 | --domain_Rand|randomizatize the dynamics of the environment while training|int(ony 0 or 1)|
 | --episode_length|Horizon of a episode|int |
+| --anti_clock_ori |Starting orientation|bool |
 
 
 For example,
 
-      python trainStoch2_policy.py --lr 0.05 --noise 0.04 --logdir testDir --policy init_policy_TS.npy --msg "Training with some paramters" --episode_length 400
+      python trainStoch2_policy.py --lr 0.05 --noise 0.04 --logdir testDir --policy init_policy_Stoch2.npy --msg "Training with some paramters" --episode_length 400
 
 **Note:** 
 
