@@ -67,11 +67,11 @@ This saves the initial policy as *filename.npy* in the initial_policies folder.T
 **Note:** The initial policies are by default saved in the *initial_policies* folder.
 
 ### To train the linear policy with ARS
-This is where the ARS trainining starts,with the initial polciy trainied in the previous step.
+This is where the ARS trainiing starts, with the initial policy trained in the previous step.
         
         python trainStoch2_policy.py 
 
-The above command starts the training for Stoch2 in the default settings and by far the best observed hyperparameters. However, the following parameters can also be customized in the training as desired by the user.The policies for Laikago and HyQ could be trained similarly by running the scripts *trainLaikago_policy.py* and *trainHyQ_policy.py* respectively.
+The above command starts the training for Stoch2 in the default settings and by far the best observed hyperparameters. However, the following parameters can also be customized in the training as desired by the user. The policies for Laikago and HyQ could be trained similarly by running the scripts *trainLaikago_policy.py* and *trainHyQ_policy.py* respectively.
 
 | Parameter     |About        |  type |
 |:-------------:|:-------------:| -----:|
@@ -86,7 +86,7 @@ The above command starts the training for Stoch2 in the default settings and by 
 | --episode_length|Horizon of a episode|int |
 | --domain_Rand|randomizatize the dynamics of the environment while training|int(ony 0 or 1)|
 | --episode_length|Horizon of a episode|int |
-| --anti_clock_ori |Starting orientation|bool |
+| --anti_clock_ori |Anti-clock orientation/Clockwise orientation|bool |
 
 
 For example,
